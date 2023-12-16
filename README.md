@@ -1,7 +1,7 @@
 # short_tracker_backend
 Backend short tracker app
 
-В requirements лежат добавлен линтер ruff и pre-commit для гита.
+В requirements добавлен линтер ruff и pre-commit для гита.
 
 ## Ruff Линтер
 
