@@ -19,4 +19,4 @@ exclude = [
 
 [tool.ruff.isort]
 combine-as-imports = true
-known-local-folder = []  # Здесь указывать название локального модуля, для корректной сортировки импортов ["my_module"]
+known-local-folder = ["api", "users"]  # Здесь указывать название локального модуля, для корректной сортировки импортов ["my_module"]
