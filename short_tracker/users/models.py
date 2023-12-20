@@ -6,17 +6,8 @@ from django.db import models
 class CustomUser(AbstractUser):
     """Модель пользователей"""
 
-    USER = 'user'
-    BOSS = 'boss'
-    WORKER = 'worker'
-
-    ROLE_CHOICES = (
-        (USER, USER),
-        (BOSS, BOSS),
-        (WORKER, WORKER),
-    )
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
-    USERNAME_FIELD = 'telegram_nickname'
+    USERNAME_FIELD = 'email'
 
     username = models.CharField(
         max_length=150,
@@ -51,12 +42,9 @@ class CustomUser(AbstractUser):
         max_length=150,
         verbose_name='Фамилия',
     )
-    role = models.CharField(
-        'Роль',
-        max_length=20,
-        choices=ROLE_CHOICES,
-        default=USER,
-        blank=True
+    is_team_lead = models.BooleanField(
+        default=False,
+        verbose_name='Статус',
     )
 
     class Meta:
