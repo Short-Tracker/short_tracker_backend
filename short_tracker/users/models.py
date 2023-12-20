@@ -16,6 +16,7 @@ class CustomUser(AbstractUser):
         (WORKER, WORKER),
     )
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    USERNAME_FIELD = 'telegram_nickname'
 
     username = models.CharField(
         max_length=150,
@@ -26,11 +27,16 @@ class CustomUser(AbstractUser):
             RegexValidator(
                 regex=r'^[\w.@+-]+\Z',
                 message='username содержит недопустимый символ'
-            )]
+            )],
     )
     telegram_nickname = models.CharField(
         max_length=150,
-        verbose_name='Никнейм Телеграм'
+        verbose_name='Никнейм Телеграм',
+        validators=[
+            RegexValidator(
+                regex=r'^@[a-zA-Z0-9_]{5,32}\Z',
+                message='nickname содержит недопустимый символ'
+            )],
     )
     email = models.EmailField(
         max_length=254,
