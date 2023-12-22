@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from dotenv import load_dotenv
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", default="TestKey")
@@ -32,11 +34,13 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'corsheaders',
+    'drf_yasg',
     'djoser',
+    'rest_framework_simplejwt',
 ]
 
 LOCAL_APPS = [
-    'api.apps.UsersConfig',
+    'api.apps.ApiConfig',
     'users.apps.UsersConfig',
 ]
 
@@ -72,7 +76,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'short_tracker.wsgi.application'
-
 
 if DEBUG is True:
     DATABASES = {
@@ -121,6 +124,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -134,3 +139,6 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
 }
+
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
