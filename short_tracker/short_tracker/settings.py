@@ -1,25 +1,26 @@
 import os
 from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv()
+SECRET_KEY = os.getenv("SECRET_KEY", default="TestKey")
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG')
-DOMEN_NAME = os.getenv('DOMEN_NAME')
-IP_NAME = os.getenv('IP_NAME')
+DEBUG = os.getenv("DEBUG", default=True)
 
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(",")
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    DOMEN_NAME,
-    IP_NAME,
-]
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS")
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_URLS_REGEX = r"^/api/.*$"
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -32,10 +33,10 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'corsheaders',
     'drf_yasg',
     'djoser',
     'rest_framework_simplejwt',
-    'corsheaders',
 ]
 
 LOCAL_APPS = [
@@ -48,6 +49,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -75,26 +77,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'short_tracker.wsgi.application'
 
-if not DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': os.getenv(
-                'DB_ENGINE', default='django.db.backends.postgresql'
-            ),
-            'NAME': os.getenv('DB_NAME', 'postgres'),
-            'USER': os.getenv('POSTGRES_USER', 'postgres'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-            'HOST': os.getenv('DB_HOST', 'localhost'),
-            'PORT': os.getenv('DB_PORT', 5432)
-        },
-    }
-else:
+if DEBUG is True:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("POSTGRES_DB"),
+            "USER": os.getenv("POSTGRES_USER"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+            "HOST": os.getenv("DB_HOST"),
+            "PORT": os.getenv("DB_PORT"),
+        }
+    }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -111,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -141,16 +142,3 @@ SIMPLE_JWT = {
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_ALLOW_CREDENTIALS = True
-
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
-    'http://localhost:80',
-    f'https://{DOMEN_NAME}',
-    f'http://{DOMEN_NAME}',
-)
-
-CORS_ALLOWED_ORIGINS = CORS_ORIGIN_WHITELIST
-
-CORS_ALLOWED_ORIGIN_REGEXES = CORS_ORIGIN_WHITELIST
