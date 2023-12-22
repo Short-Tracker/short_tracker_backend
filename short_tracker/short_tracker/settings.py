@@ -24,7 +24,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    'api.apps.UsersConfig',
+    'api.apps.ApiConfig',
     'users.apps.UsersConfig',
 ]
 
