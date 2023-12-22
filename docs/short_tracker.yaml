@@ -1,0 +1,834 @@
+openapi: 3.1.0
+info:
+  title: Tasks API
+  version: 0.1.0
+paths:
+  /api/v1/auth/login/:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      description: >-
+        Авторизация пользователя, jwt токен (access, refresh) установлевается в
+        куки
+      operationId: login_api_v1_auth_login__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAuth'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/logout/:
+    post:
+      tags:
+        - Auth
+      summary: Logout
+      description: Выход пользователя, jwt токен (access, refresh) удаляется из куки
+      operationId: logout_api_v1_auth_logout__post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/auth/refresh/:
+    post:
+      tags:
+        - Auth
+      summary: Refresh
+      description: Берет refresh токен из куки и обновляет access и refresh токен
+      operationId: refresh_api_v1_auth_refresh__post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/tasks/:
+    get:
+      tags:
+        - Tasks
+      summary: Get Tasks
+      description: Список всех задач
+      operationId: get_tasks_api_v1_tasks__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                required:
+                  - count
+                  - results
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  next:
+                    type: string
+                    format: uri
+                    x-nullable: true
+                  previous:
+                    type: string
+                    format: uri
+                    x-nullable: true
+                  results:
+                    items:
+                      $ref: '#/components/schemas/ShowTask'
+                    type: array
+                    title: Response Get Tasks Api V1 Tasks  Get
+    post:
+      tags:
+        - Tasks
+      summary: Create Task
+      description: Создание задачи
+      operationId: create_task_api_v1_tasks__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShowTask'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/tasks/{id}/:
+    get:
+      tags:
+        - Tasks
+      summary: Get Task
+      description: Задача по айди
+      operationId: get_task_api_v1_tasks__id___get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShowTask'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+        - Tasks
+      summary: Update Task
+      description: Обновление задачи по айди
+      operationId: update_task_api_v1_tasks__id___patch
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            title: Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShowTask'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/requests/:
+    get:
+      tags:
+        - Requests
+      summary: Get Requests
+      description: Список запросов исполнителя
+      operationId: get_requests_api_v1_requests__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                required:
+                  - count
+                  - results
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  next:
+                    type: string
+                    format: uri
+                    x-nullable: true
+                  previous:
+                    type: string
+                    format: uri
+                    x-nullable: true
+                  results:
+                    items:
+                      $ref: '#/components/schemas/RequestShow'
+                    type: array
+                    title: Response Get Requests Api V1 Requests  Get
+    post:
+      tags:
+        - Requests
+      summary: Create Request
+      description: Создание запроса для лида от исполнителя
+      operationId: create_request_api_v1_requests__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestFromUser'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestShow'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/requests/{id}/:
+    get:
+      tags:
+        - Requests
+      summary: Get Request
+      description: Запрос исполнителя по айди
+      operationId: get_request_api_v1_requests__id___get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestShow'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+        - Requests
+      summary: Update Request
+      description: Обновление запроса исполнителя по айди
+      operationId: update_request_api_v1_requests__id___patch
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            title: Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestFromUser'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestShow'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+
+  /api/v1/users/:
+    post:
+      tags:
+        - users
+      summary: Create User
+      description: Создание Лидом нового пользователя
+      operationId: create_user_api_v1_users__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShowUser'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      operationId: users_list
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                required:
+                  - count
+                  - results
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  next:
+                    type: string
+                    format: uri
+                    x-nullable: true
+                  previous:
+                    type: string
+                    format: uri
+                    x-nullable: true
+                  results:              
+                    items:
+                      $ref: '#/components/schemas/ShowUser'
+                    type: array
+                    title: Response Get Users Api V1 Users  Get
+      tags:
+        - users
+    parameters: []
+  /api/v1/users/me/:
+    get:
+      operationId: users_me_read
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                required:
+                  - count
+                  - results
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  next:
+                    type: string
+                    format: uri
+                    x-nullable: true
+                  previous:
+                    type: string
+                    format: uri
+                    x-nullable: true
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShowUser'
+      tags:
+        - users
+    patch:
+      operationId: users_me_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/components/schemas/ShowUser'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShowUser'
+      tags:
+        - users
+    delete:
+      operationId: users_me_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - users
+    parameters: []
+  /api/v1/users/reset_password/:
+    post:
+      operationId: users_reset_password
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SendEmailReset'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/SendEmailReset'
+      tags:
+        - users
+    parameters: []
+  /api/v1/users/reset_password_confirm/:
+    post:
+      operationId: users_reset_password_confirm
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Password'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Password'
+      tags:
+        - users
+    parameters: []
+  /api/v1/users/set_email/:
+    post:
+      operationId: users_set_username
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetUsername'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/SetUsername'
+      tags:
+        - users
+    parameters: []
+  /api/v1/users/set_password/:
+    post:
+      operationId: users_set_password
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetPassword'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/SetPassword'
+      tags:
+        - users
+    parameters: []
+  /api/v1/users/{id}/:
+    get:
+      operationId: users_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:          
+              schema:
+                $ref: '#/components/schemas/ShowUser'
+      tags:
+        - users
+    patch:
+      operationId: users_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/components/schemas/ShowUser'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/components/schemas/ShowUser'
+      tags:
+        - users
+    delete:
+      operationId: users_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - users
+
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+      type: object
+      title: HTTPValidationError
+    RequestFromUser:
+      properties:
+        task_id:
+          type: integer
+          title: Task Id
+        user_id:
+          type: integer
+          title: User Id
+        name:
+          type: string
+          title: Name
+        created:
+          type: string
+          format: date-time
+          title: Created
+        link:
+          type: string
+          title: Link
+        comment:
+          type: string
+          title: Comment
+      type: object
+      required:
+        - task_id
+        - user_id
+        - name
+        - created
+        - link
+        - comment
+      title: RequestFromUser
+    RequestShow:
+      properties:
+        id:
+          type: integer
+          title: Id
+        task_id:
+          $ref: '#/components/schemas/ShowTask'
+        user_id:
+          type: integer
+          title: User Id
+        name:
+          type: string
+          title: Name
+        created:
+          type: string
+          format: date-time
+          title: Created
+        link:
+          type: string
+          title: Link
+        comment:
+          type: string
+          title: Comment
+      type: object
+      required:
+        - id
+        - task_id
+        - user_id
+        - name
+        - created
+        - link
+        - comment
+      title: RequestShow
+    ShowTask:
+      properties:
+        id:
+          type: integer
+          title: Id
+        read:
+          type: boolean
+          title: Read
+          default: false
+        users:
+          items:
+            $ref: '#/components/schemas/ShowUser'
+          type: array
+          title: Users
+        start_date:
+          type: string
+          format: date-time
+          title: Start Date
+        take_date:
+          type: string
+          format: date-time
+          title: Take Date
+        end_date:
+          type: string
+          format: date-time
+          title: End Date
+        deadline:
+          type: string
+          format: date-time
+          title: Deadline
+        status:
+          $ref: '#/components/schemas/Status'
+        name:
+          type: string
+          title: Name
+        link:
+          type: string
+          title: Link
+        comment:
+          type: string
+          title: Comment
+      type: object
+      required:
+        - id
+        - users
+        - start_date
+        - deadline
+        - status
+        - name
+        - link
+        - comment
+      title: ShowTask
+    ShowUser:
+      properties:
+        id:
+          type: integer
+          title: Id
+        first_name:
+          type: string
+          title: First Name
+        last_name:
+          type: string
+          title: Last Name
+        telegram:
+          type: string
+          pattern: ^@[a-zA-Z0-9_]{5,32}$
+          title: Telegram
+        role:
+          type: string
+          title: Role
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - telegram
+        - role
+      title: ShowUser
+    Status:
+      type: string
+      enum:
+        - todo
+        - in_progress
+        - done
+        - hold
+      title: Status
+    TaskCreate:
+      properties:
+        users:
+          items:
+            type: integer
+          type: array
+          title: Users
+        start_date:
+          type: string
+          format: date-time
+          title: Start Date
+        deadline:
+          type: string
+          format: date-time
+          title: Deadline
+        status:
+          allOf:
+            - $ref: '#/components/schemas/Status'
+          default: todo
+        name:
+          type: string
+          maxLength: 50
+          minLength: 3
+          title: Name
+        link:
+          type: string
+          title: Link
+        comment:
+          type: string
+          title: Comment
+      type: object
+      required:
+        - users
+        - deadline
+        - name
+        - link
+        - comment
+      title: TaskCreate
+    UserAuth:
+      properties:
+        telegram:
+          type: string
+          pattern: ^@[a-zA-Z0-9_]{5,32}$
+          title: Telegram
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+        - telegram
+        - password
+      title: UserAuth
+    UserCreate:
+      properties:
+        first_name:
+          type: string
+          title: First Name
+        last_name:
+          type: string
+          title: Last Name
+        telegram:
+          type: string
+          pattern: ^@[a-zA-Z0-9_]{5,32}$
+          title: Telegram
+        role:
+          type: string
+          title: Role
+          default: Исполнитель
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+        - first_name
+        - last_name
+        - telegram
+        - password
+      title: UserCreate
+    ValidationError:
+      properties:
+        field_name:
+          type: string
+          title: Field Name
+      type: object
+      required:
+      title: ValidationError
+
+
+definitions:
+  SendEmailReset:
+    required:
+      - email
+    type: object
+    properties:
+      email:
+        title: Email
+        type: string
+        format: email
+        minLength: 1
+  UsernameResetConfirm:
+    required:
+      - new_email
+    type: object
+    properties:
+      new_email:
+        title: Email
+        description: Введите адрес электронной почты.
+        type: string
+        format: email
+        pattern: ^[\w.@+-]+$
+        maxLength: 256
+        minLength: 1
+  Password:
+    required:
+      - new_password
+      - email
+    type: object
+    properties:
+      new_password:
+        title: New password
+        type: string
+        minLength: 1
+      email:
+        title: Email
+        type: string
+        format: email
+        minLength: 1
+  SetUsername:
+    required:
+      - current_password
+      - new_email
+    type: object
+    properties:
+      current_password:
+        title: Current password
+        type: string
+        minLength: 1
+      new_email:
+        title: Email
+        description: Введите адрес электронной почты.
+        type: string
+        format: email
+        pattern: ^[\w.@+-]+$
+        maxLength: 256
+        minLength: 1
+  SetPassword:
+    required:
+      - new_password
+      - current_password
+    type: object
+    properties:
+      new_password:
+        title: New password
+        type: string
+        minLength: 1
+      current_password:
+        title: Current password
+        type: string
+        minLength: 1
