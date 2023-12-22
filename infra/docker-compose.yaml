@@ -10,7 +10,7 @@ services:
   
   frontend:
     container_name: frontend
-    image: {{ secrets.DOCKER_USERNAME }}/short_tracker_frontend:v1
+    image: zali1813/short_tracker_frontend:v1
     restart: always
     volumes:
       - ../frontend/:/app/result_build/
@@ -19,7 +19,7 @@ services:
 
   backend:
     container_name: backend
-    image: {{ secrets.DOCKER_USERNAME }}/short_tracker_backend:v1
+    image: zali1813/short_tracker_backend:v1
     restart: always
     volumes:
       - static_value:/app/static/
