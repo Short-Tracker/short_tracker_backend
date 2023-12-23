@@ -10,12 +10,14 @@ defusedxml==0.8.0rc2
 distlib==0.3.8
 Django==4.2.8
 django-cors-headers==4.3.1
+django-filter==23.5
 django-templated-mail==1.1.1
 djangorestframework==3.14.0
 djangorestframework-simplejwt==4.7.2
 djoser==2.1.0
 drf-yasg==1.21.7
 filelock==3.13.1
+gunicorn==21.2.0
 identify==2.5.33
 idna==3.6
 inflection==0.5.1
@@ -27,6 +29,7 @@ oauthlib==3.2.2
 packaging==23.2
 platformdirs==4.1.0
 pre-commit==3.6.0
+psycopg2-binary==2.9.9
 pycparser==2.21
 PyJWT==2.8.0
 python-dotenv==1.0.0
@@ -45,7 +48,3 @@ tzdata==2023.3
 uritemplate==4.1.1
 urllib3==2.1.0
 virtualenv==20.25.0
-gunicorn==21.2.0
-psycopg2-binary==2.9.9
-python-dotenv==1.0.0
-django-cors-headers==4.3.1
