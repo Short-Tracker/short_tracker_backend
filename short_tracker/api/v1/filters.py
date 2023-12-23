@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Case, Q, Value, When
 from django.utils import timezone
 from django_filters.rest_framework import FilterSet, filters
 
@@ -33,10 +33,24 @@ class TaskFilter(FilterSet):
         """
         Filter the queryset based on the description field.
         """
+        words = value.lower().split()
+        for i in range(1, len(words)):
+            words.append(' '.join(words[:i+1]))
+
         query = Q()
-        for word in value.split():
+        for word in words:
             query |= Q(description__icontains=word)
-        return queryset.filter(query).distinct()
+
+        phrase_start = Case(
+            *[When(
+                description__istartswith=word, then=Value(True)
+            ) for word in words],
+            default=Value(False),
+        )
+
+        return queryset.filter(query).annotate(
+            description_start=phrase_start,
+        ).order_by('-description_start', '-description')
 
     def filter_is_expired(self, queryset, _, value):
         """
