@@ -21,6 +21,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
