@@ -9,6 +9,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
