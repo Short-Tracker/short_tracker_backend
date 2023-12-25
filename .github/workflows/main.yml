@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          file: ./Dockerfile
+          file: ./short_tracker/Dockerfile
           tags: ${{ env.BACKEND_IMAGE }}
           
   deploy:
