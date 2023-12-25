@@ -6,7 +6,7 @@ COPY short_tracker/requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache-dir
 
-COPY . .
+COPY ./short_tracker .
 
 RUN chmod +x entrypoint.sh
 
