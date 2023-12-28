@@ -21,6 +21,10 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_URLS_REGEX = r'^/api/.*$'
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
+AUTH_USER_MODEL = 'users.CustomUser'
+
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -137,7 +141,7 @@ REST_FRAMEWORK = {
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'users.authentication.CookieJWTAuthentication',
     ],
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
@@ -145,7 +149,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-   'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+   'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+   'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
 
