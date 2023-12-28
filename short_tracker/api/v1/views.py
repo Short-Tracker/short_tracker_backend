@@ -15,6 +15,10 @@ from .serializers import (
     TaskShowSerializer,
     TaskUpdateSerializer,
 )
+from api.v1.serializers import (
+    AuthSignInSerializer,
+    ShortUserSerializer,
+)
 from tasks.models import Task
 
 User = get_user_model()
