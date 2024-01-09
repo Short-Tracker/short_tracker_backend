@@ -9,15 +9,22 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     USERNAME_FIELD = 'email'
 
-    username = models.CharField(
-        max_length=150,
-        verbose_name='Ник пользователя',
-        unique=True,
-        # db_index=True, Если True, для этого поля будет созданиндексбазыданных
+    first_name = models.CharField(
+        max_length=30,
+        verbose_name='Имя',
         validators=[
             RegexValidator(
-                regex=r'^[\w.@+-]+\Z',
-                message='username содержит недопустимый символ'
+                regex=r'^[а-яА-Я\-]{2,30}\Z',
+                message='Только кирилица и дефис'
+            )],
+    )
+    last_name = models.CharField(
+        max_length=30,
+        verbose_name='Фамилия',
+        validators=[
+            RegexValidator(
+                regex=r'^[а-яА-Я\-]{2,30}\Z',
+                message='Только кирилица и дефис'
             )],
     )
     telegram_nickname = models.CharField(
@@ -31,20 +38,17 @@ class CustomUser(AbstractUser):
     )
     email = models.EmailField(
         max_length=254,
-        verbose_name='Электронная почта',
+        verbose_name='Электронная    почта',
         unique=True,
-    )
-    first_name = models.CharField(
-        max_length=150,
-        verbose_name='Имя',
-    )
-    last_name = models.CharField(
-        max_length=150,
-        verbose_name='Фамилия',
+        validators=[
+            RegexValidator(
+                regex=r'^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$',
+                message='email содержит недопустимый символ'
+            )],
     )
     is_team_lead = models.BooleanField(
         default=False,
-        verbose_name='Статус',
+        verbose_name='Роль',
     )
 
     class Meta:
