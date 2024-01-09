@@ -43,6 +43,7 @@ LOCAL_APPS = [
     'api.apps.ApiConfig',
     'users.apps.UsersConfig',
     'tasks.apps.TasksConfig',
+    'message.apps.MessageConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -133,7 +134,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [

@@ -38,7 +38,7 @@ class CustomUser(AbstractUser):
     )
     email = models.EmailField(
         max_length=254,
-        verbose_name='Электронная    почта',
+        verbose_name='Электронная почта',
         unique=True,
         validators=[
             RegexValidator(
