@@ -25,8 +25,6 @@ CORS_URLS_REGEX = r'^/.*$'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
-AUTH_USER_MODEL = 'users.CustomUser'
-
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
