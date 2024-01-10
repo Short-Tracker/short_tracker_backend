@@ -31,7 +31,7 @@ REFRESH_TOKEN_LIFETIME = int(
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def sign_in(request):
+def login(request):
     serializer = AuthSignInSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = serializer.validated_data.get('user')
@@ -56,13 +56,38 @@ def sign_in(request):
 
 
 @api_view(['POST'])
-def sign_out(request):
+@permission_classes([AllowAny])
+def refresh_token(request):
+    refresh_token = request.COOKIES.get('jwt_refresh')
+    refresh = RefreshToken(refresh_token)
+    response = Response()
+    response.set_cookie(
+        'jwt_access', str(refresh.access_token),
+        expires=ACCESS_TOKEN_LIFETIME,
+        httponly=True, samesite='None', secure=True,
+    )
+
+    if django_settings.SIMPLE_JWT.get('ROTATE_REFRESH_TOKENS'):
+        refresh.set_jti()
+        refresh.set_exp()
+        response.set_cookie(
+            'jwt_refresh', str(refresh),
+            expires=REFRESH_TOKEN_LIFETIME,
+            httponly=True, samesite='None', secure=True,
+        )
+
+    return response
+
+
+@api_view(['POST'])
+def logout(request):
     response = Response(
         data={'signout': ('Вы успешно вышли из учетной записи!')},
         status=status.HTTP_200_OK
     )
     response.delete_cookie('jwt_access', samesite='None',)
     response.delete_cookie('jwt_refresh', samesite='None',)
+
     return response
 
 

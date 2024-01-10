@@ -23,8 +23,6 @@ CORS_URLS_REGEX = r'^/api/.*$'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
-AUTH_USER_MODEL = 'users.CustomUser'
-
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -139,18 +137,17 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'users.authentication.CookieJWTAuthentication',
     ],
-
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10
 }
 
 SIMPLE_JWT = {
-   'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+   'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+   'ROTATE_REFRESH_TOKENS': True,
 }
 
 
