@@ -14,9 +14,9 @@ router_v1.register('tasks', TaskViewSet, basename='tasks')
 
 
 auth_url = [
-    path('token/login/', login, name='login'),
-    path('token/refresh/', refresh_token, name='refresh_token'),
-    path('token/logout/', logout, name='logout'),
+    path('login/', login, name='login'),
+    path('refresh/', refresh_token, name='refresh_token'),
+    path('logout/', logout, name='logout'),
 ]
 
 
