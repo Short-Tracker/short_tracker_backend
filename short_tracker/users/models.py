@@ -9,6 +9,10 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     USERNAME_FIELD = 'email'
 
+    username = models.CharField(
+        max_length=150,
+        verbose_name='Имя пользователя',
+    )
     first_name = models.CharField(
         max_length=30,
         verbose_name='Имя',
@@ -28,7 +32,7 @@ class CustomUser(AbstractUser):
             )],
     )
     telegram_nickname = models.CharField(
-        max_length=150,
+        max_length=32,
         verbose_name='Никнейм Телеграм',
         validators=[
             RegexValidator(
@@ -38,7 +42,7 @@ class CustomUser(AbstractUser):
     )
     email = models.EmailField(
         max_length=254,
-        verbose_name='Электронная    почта',
+        verbose_name='Электронная почта',
         unique=True,
         validators=[
             RegexValidator(
