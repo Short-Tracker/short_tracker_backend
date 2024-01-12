@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
 
@@ -13,6 +14,18 @@ STATUS_TIME = {
     'done': 'finish_date',
     'archived': 'archive_date',
 }
+
+
+class UserCreateSerializer(UserCreateSerializer):
+    """Serializer for user registration."""
+
+    class Meta:
+        model = User
+        fields = (
+            'email', 'username', 'telegram_nickname',
+            'password', 'first_name', 'last_name',
+            'is_team_lead'
+        )
 
 
 class UserSerializer(serializers.ModelSerializer):
