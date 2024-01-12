@@ -156,7 +156,6 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
-    'SEND_CONFIRMATION_EMAIL': True,
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'SERIALIZERS': {
         'user': 'api.v1.serializers.UserSerializer',
