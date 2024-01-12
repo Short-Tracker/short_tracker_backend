@@ -17,9 +17,19 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='*').split(',')
 CSRF_TRUSTED_ORIGINS = os.getenv(
     'CSRF_TRUSTED_ORIGINS', default='https://*').split(' ')
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_URLS_REGEX = r'^/api/.*$'
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',
+    'http://localhost:80',
+    'http://localhost:8001',
+    'http://localhost:8000',
+    'https://short-tracker.acceleratorpracticum.ru',
+)
+
+CORS_ALLOWED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -152,3 +162,14 @@ SIMPLE_JWT = {
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'SEND_CONFIRMATION_EMAIL': True,
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+    'SERIALIZERS': {
+        'user': 'api.v1.serializers.UserSerializer',
+        'current_user': 'api.v1.serializers.UserSerializer',
+        'user_create': 'api.v1.serializers.UserCreateSerializer',
+    },
+}
