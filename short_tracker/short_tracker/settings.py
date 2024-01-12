@@ -17,19 +17,9 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='*').split(',')
 CSRF_TRUSTED_ORIGINS = os.getenv(
     'CSRF_TRUSTED_ORIGINS', default='https://*').split(' ')
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_URLS_REGEX = r'^/api/.*$'
-
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
-    'http://localhost:80',
-    'http://localhost:8001',
-    'http://localhost:8000',
-    'https://short-tracker.acceleratorpracticum.ru',
-)
-
-CORS_ALLOWED_ORIGINS = CORS_ORIGIN_WHITELIST
+CORS_URLS_REGEX = r'^/.*$'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
