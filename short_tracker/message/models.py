@@ -3,7 +3,7 @@ from users.models import CustomUser
 from tasks.models import Task
 
 
-class Question(models.Model):
+class Message(models.Model):
     """Модель вопроса по задаче."""
 
     sender = models.ForeignKey(
@@ -16,56 +16,58 @@ class Question(models.Model):
         Task,
         on_delete=models.CASCADE,
         related_name='messages',
-        verbose_name='Задача'
+        verbose_name='Задача',
+        null=True,
+        blank=True,
     )
-    text_question = models.TextField(
+    message_body = models.TextField(
         'Текст сообщения'
     )
-    date_question = models.DateTimeField(
+    message_date = models.DateTimeField(
         'Дата',
         auto_now=True
     )
 
     def __str__(self):
-        return f'Сообщение №{self.pk}  по задаче {self.task}'
+        return self.message_body
 
     class Meta:
-        verbose_name = 'Вопрос по задаче'
-        verbose_name_plural = 'Вопросы по задачам'
+        verbose_name = 'Сообщение'
+        verbose_name_plural = 'Сообщения'
         indexes = [
-            models.Index(fields=['date_question', ])
+            models.Index(fields=['message_date', ])
         ]
 
 
-class Answer(models.Model):
+class Reply(models.Model):
     """Модель ответа на запрос от исполнителя."""
 
     author = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name='answer',
+        related_name='reply',
         verbose_name='Автор ответа'
     )
-    question = models.ForeignKey(
-        Question,
+    message = models.ForeignKey(
+        Message,
         on_delete=models.CASCADE,
-        related_name='answer',
-        verbose_name='Вопрос'
+        related_name='reply',
+        verbose_name='Cjj,otybt'
     )
-    text_answer = models.TextField(
+    reply_body = models.TextField(
         'Текст'
     )
-    date_answer = models.DateTimeField(
+    reply_date = models.DateTimeField(
         'Дата',
         auto_now=True,
     )
 
     def __str__(self):
-        return f'Ответ №{self.pk} на {self.question}'
+        return self.reply_body
 
     class Meta:
         verbose_name = 'Ответ'
         verbose_name_plural = 'Ответы'
         indexes = [
-            models.Index(fields=['date_answer', ])
+            models.Index(fields=['reply_date', ])
         ]

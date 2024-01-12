@@ -1,15 +1,15 @@
 from rest_framework.viewsets import ModelViewSet
-from .serializers import AnswerSerializer, QuestionSerializer
-from message.models import Answer, Question
+from .serializers import MessageSerializer, ReplySerializer
+from message.models import Message, Reply
 
 
 class QuestionViewSet(ModelViewSet):
     """Вьюсет запрос к тимлиду."""
-    serializer_class = QuestionSerializer
+    serializer_class = MessageSerializer
 
     def get_queryset(self):
         user = self.request.user
-        return Question.objects.filter(sender=1)
+        return Message.objects.filter(sender=user)
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -18,12 +18,12 @@ class QuestionViewSet(ModelViewSet):
 
 class AnswerViewSet(ModelViewSet):
     """Вьюсет ответа от тимлида.."""
-    serializer_class = AnswerSerializer
-    queryset = Answer.objects.all()
+    serializer_class = ReplySerializer
+    queryset = Reply.objects.all()
 
     def get_queryset(self):
         user = self.request.user
-        return Answer.objects.filter(author=1)
+        return Reply.objects.filter(author=user)
 
     def perform_create(self, serializer):
         user = self.request.user

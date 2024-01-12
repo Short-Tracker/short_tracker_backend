@@ -1,25 +1,20 @@
 from rest_framework import serializers
 
-from message.models import Answer, Question
+from message.models import Reply, Message
 
 
-class QuestionSerializer(serializers.ModelSerializer):
-    task = serializers.PrimaryKeyRelatedField(read_only=True)
-    team_lead = serializers.SerializerMethodField()
+class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Question
+        model = Message
         fields = '__all__'
 
-    def get_team_lead(self, obj):
-        return obj.task.creator.id
 
-
-class AnswerSerializer(serializers.ModelSerializer):
-    question = QuestionSerializer()
+class ReplySerializer(serializers.ModelSerializer):
+    message = MessageSerializer()
 
     class Meta:
-        model = Answer
+        model = Reply
         fields = '__all__'
 
 
