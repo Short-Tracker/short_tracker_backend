@@ -44,7 +44,7 @@ class Task(models.Model):
         help_text=_('The description of the task'),
     )
     link = models.URLField(
-        max_length=100,
+        max_length=2048,
         verbose_name=_('link'),
         help_text=_('The link of the task'),
         blank=True,
