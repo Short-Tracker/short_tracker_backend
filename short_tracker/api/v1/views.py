@@ -9,13 +9,11 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from .filters import TaskFilter
 from .serializers import (
+    AuthSignInSerializer,
+    ShortUserSerializer,
     TaskCreateSerializer,
     TaskShowSerializer,
     TaskUpdateSerializer,
-)
-from api.v1.serializers import (
-    AuthSignInSerializer,
-    ShortUserSerializer,
 )
 from tasks.models import Task
 
