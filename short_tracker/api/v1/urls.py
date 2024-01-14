@@ -3,11 +3,11 @@ from rest_framework.routers import DefaultRouter
 
 from .schemas import schema_view
 from .views import (
-    TaskViewSet,
     login,
     logout,
     refresh_token,
 )
+from api.v1.tasks.views import TaskViewSet
 
 router_v1 = DefaultRouter()
 router_v1.register('tasks', TaskViewSet, basename='tasks')
