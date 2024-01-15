@@ -22,7 +22,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.is_lead:
             queryset = Task.objects.exclude(
-                Q(creator=F('performers')) & Q(performers=user)
+                Q(creator=F('performers')) & ~Q(performers=user)
             )
         else:
             queryset = Task.objects.filter(performers=user)
