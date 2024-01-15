@@ -25,3 +25,45 @@ schema_view = get_schema_view(
    public=True,
    permission_classes=(permissions.AllowAny,),
 )
+
+LOGIN_SCHEMA = openapi.Schema(
+   type=openapi.TYPE_OBJECT,
+   required=('email', 'password',),
+   properties={
+      'email': openapi.Schema(type=openapi.TYPE_STRING, format='email'),
+      'password': openapi.Schema(type=openapi.TYPE_STRING, min_length=8),
+   },
+)
+
+LOGIN_DONE_SCHEMA = openapi.Schema(
+   type=openapi.TYPE_OBJECT,
+   required=('id', 'full_name', 'telegram_nickname', 'email'),
+   properties={
+      'id': openapi.Schema(type=openapi.TYPE_STRING),
+      'full_name': openapi.Schema(type=openapi.TYPE_STRING),
+      'telegram_nickname': openapi.Schema(type=openapi.TYPE_STRING),
+      'email': openapi.Schema(type=openapi.TYPE_STRING, format='email')
+   }
+)
+
+LOGOUT_SCHEMA = openapi.Schema(
+   type=openapi.TYPE_OBJECT,
+   required=('signout',),
+   properties={
+      'signout': openapi.Schema(
+         type=openapi.TYPE_STRING,
+         default=('Вы успешно вышли из учетной записи!')
+      )
+   }
+)
+
+REFRESH_DONE_SCHEMA = openapi.Schema(
+   type=openapi.TYPE_OBJECT,
+   required=('refresh',),
+   properties={
+      'refresh': openapi.Schema(
+         type=openapi.TYPE_STRING,
+         default=('Токен успешно обновлен!')
+      )
+   }
+)
