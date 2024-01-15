@@ -1,15 +1,13 @@
 from django.conf import settings as django_settings
 from django.contrib.auth import get_user_model
-from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from .filters import TaskFilter
-from .schemas import (
+from ..schemas import (
     LOGIN_DONE_SCHEMA,
     LOGIN_SCHEMA,
     LOGOUT_SCHEMA,
@@ -18,11 +16,7 @@ from .schemas import (
 from .serializers import (
     AuthSignInSerializer,
     ShortUserSerializer,
-    TaskCreateSerializer,
-    TaskShowSerializer,
-    TaskUpdateSerializer,
 )
-from tasks.models import Task
 
 User = get_user_model()
 
@@ -115,20 +109,3 @@ def logout(request):
     response.delete_cookie('jwt_refresh', samesite='None',)
 
     return response
-
-
-class TaskViewSet(viewsets.ModelViewSet):
-    queryset = Task.objects.all()
-    permission_classes = (AllowAny,)
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = TaskFilter
-
-    def get_serializer_class(self):
-        if self.action == 'partial_update':
-            return TaskUpdateSerializer
-        elif self.action == 'create':
-            return TaskCreateSerializer
-        return TaskShowSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(creator=self.request.user)
