@@ -17,9 +17,12 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='*').split(',')
 CSRF_TRUSTED_ORIGINS = os.getenv(
     'CSRF_TRUSTED_ORIGINS', default='https://*').split(' ')
 
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_URLS_REGEX = r'^/api/.*$'
+CORS_URLS_REGEX = r'^/.*$'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -150,5 +153,14 @@ SIMPLE_JWT = {
    'ROTATE_REFRESH_TOKENS': True,
 }
 
-
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+    'SERIALIZERS': {
+        'user': 'api.v1.serializers.UserSerializer',
+        'current_user': 'api.v1.serializers.UserSerializer',
+        'user_create': 'api.v1.serializers.UserCreateSerializer',
+    },
+}
