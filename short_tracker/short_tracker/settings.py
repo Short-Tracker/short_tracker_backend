@@ -17,7 +17,6 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='*').split(',')
 CSRF_TRUSTED_ORIGINS = os.getenv(
     'CSRF_TRUSTED_ORIGINS', default='https://*').split(' ')
 
-
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 CORS_ORIGIN_ALLOW_ALL = True
@@ -153,7 +152,7 @@ SIMPLE_JWT = {
    'ROTATE_REFRESH_TOKENS': True,
 }
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
