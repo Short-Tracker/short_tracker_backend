@@ -1,17 +1,11 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
 
-from .schemas import schema_view
-from .views import (
-    TaskViewSet,
+from api.v1.schemas import schema_view
+from api.v1.users.views import (
     login,
     logout,
     refresh_token,
 )
-
-router_v1 = DefaultRouter()
-router_v1.register('tasks', TaskViewSet, basename='tasks')
-
 
 auth_url = [
     path('login/', login, name='login'),
@@ -22,7 +16,6 @@ auth_url = [
 
 urlpatterns = [
     path('', include('djoser.urls')),
-    path('', include(router_v1.urls)),
     path('auth/', include(auth_url)),
     path(
         'swagger<format>/',
