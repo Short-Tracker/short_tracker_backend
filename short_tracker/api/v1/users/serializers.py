@@ -6,13 +6,6 @@ from rest_framework.exceptions import NotFound, ValidationError
 User = get_user_model()
 
 
-STATUS_TIME = {
-    'in progress': 'inprogress_date',
-    'done': 'finish_date',
-    'archived': 'archive_date',
-}
-
-
 class UserCreateSerializer(UserCreateSerializer):
     """Serializer for user registration."""
 

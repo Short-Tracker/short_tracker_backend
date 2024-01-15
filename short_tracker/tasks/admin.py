@@ -11,7 +11,7 @@ class TaskAdmin(admin.ModelAdmin):
         'display_performers',
         'description',
         'status',
-        'start_date',
+        'create_date',
         'deadline_date',
     )
     search_fields = (

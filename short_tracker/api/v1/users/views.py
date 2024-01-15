@@ -71,7 +71,7 @@ def login(request):
     },
 )
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def refresh_token(request):
     refresh_token = request.COOKIES.get('jwt_refresh')
     refresh = RefreshToken(refresh_token)
