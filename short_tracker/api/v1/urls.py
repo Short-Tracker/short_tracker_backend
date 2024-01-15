@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from .schemas import schema_view
+from api.v1.schemas import schema_view
 from api.v1.users.views import (
     login,
     logout,

@@ -7,13 +7,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from ..schemas import (
+from api.v1.schemas import (
     LOGIN_DONE_SCHEMA,
     LOGIN_SCHEMA,
     LOGOUT_SCHEMA,
     REFRESH_DONE_SCHEMA,
 )
-from .serializers import (
+from api.v1.users.serializers import (
     AuthSignInSerializer,
     ShortUserSerializer,
 )
