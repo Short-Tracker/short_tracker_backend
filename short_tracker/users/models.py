@@ -94,3 +94,7 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
+
+    @property
+    def is_lead(self):
+        return self.is_team_lead
