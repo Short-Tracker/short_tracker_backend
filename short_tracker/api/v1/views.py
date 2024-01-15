@@ -11,6 +11,7 @@ from api.v1.serializers import (
     ShortUserSerializer,
 )
 
+
 User = get_user_model()
 
 ACCESS_TOKEN_LIFETIME = int(
