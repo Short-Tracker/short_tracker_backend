@@ -1,13 +1,13 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .schemas import schema_view
-from .views import (
+from api.v1.schemas import schema_view
+from api.v1.tasks.views import TaskViewSet
+from api.v1.users.views import (
     login,
     logout,
     refresh_token,
 )
-from api.v1.tasks.views import TaskViewSet
 
 router_v1 = DefaultRouter()
 router_v1.register('tasks', TaskViewSet, basename='tasks')

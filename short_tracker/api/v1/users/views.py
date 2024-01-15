@@ -1,16 +1,22 @@
 from django.conf import settings as django_settings
 from django.contrib.auth import get_user_model
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from api.v1.serializers import (
+from api.v1.schemas import (
+    LOGIN_DONE_SCHEMA,
+    LOGIN_SCHEMA,
+    LOGOUT_SCHEMA,
+    REFRESH_DONE_SCHEMA,
+)
+from api.v1.users.serializers import (
     AuthSignInSerializer,
     ShortUserSerializer,
 )
-
 
 User = get_user_model()
 
@@ -22,6 +28,14 @@ REFRESH_TOKEN_LIFETIME = int(
 )
 
 
+@swagger_auto_schema(
+    method='post',
+    request_body=LOGIN_SCHEMA,
+    responses={
+        200: LOGIN_DONE_SCHEMA,
+        400: 'Bad request',
+    },
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
@@ -48,12 +62,23 @@ def login(request):
     return response
 
 
+@swagger_auto_schema(
+    method='post',
+    request_body=LOGIN_SCHEMA,
+    responses={
+        200: REFRESH_DONE_SCHEMA,
+        400: 'Bad request',
+    },
+)
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def refresh_token(request):
     refresh_token = request.COOKIES.get('jwt_refresh')
     refresh = RefreshToken(refresh_token)
-    response = Response()
+    response = Response(
+        data={'refresh': ('Токен успешно обновлен!')},
+        status=status.HTTP_200_OK
+    )
     response.set_cookie(
         'jwt_access', str(refresh.access_token),
         expires=ACCESS_TOKEN_LIFETIME,
@@ -72,7 +97,9 @@ def refresh_token(request):
     return response
 
 
+@swagger_auto_schema(method='post', responses={200: LOGOUT_SCHEMA},)
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def logout(request):
     response = Response(
         data={'signout': ('Вы успешно вышли из учетной записи!')},

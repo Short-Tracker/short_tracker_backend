@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import serializers
 
-from api.v1.serializers import ShortUserSerializer
+from api.v1.users.serializers import ShortUserSerializer
 from tasks.models import Task
 
 User = get_user_model()

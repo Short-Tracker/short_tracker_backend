@@ -158,8 +158,8 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'SERIALIZERS': {
-        'user': 'api.v1.serializers.UserSerializer',
-        'current_user': 'api.v1.serializers.UserSerializer',
-        'user_create': 'api.v1.serializers.UserCreateSerializer',
+        'user': 'api.v1.users.serializers.UserSerializer',
+        'current_user': 'api.v1.users.serializers.UserSerializer',
+        'user_create': 'api.v1.users.serializers.UserCreateSerializer',
     },
 }
