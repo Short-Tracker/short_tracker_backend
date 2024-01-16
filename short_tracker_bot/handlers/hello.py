@@ -1,5 +1,6 @@
 from aiogram import F, Router
 from aiogram import types
+from aiogram.filters import CommandStart
 from keyboards.keyboards import start_keyboard
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
@@ -13,8 +14,9 @@ class Login(StatesGroup):
     new_token = State()
 
 
-@router.message(F.text == '/start')
+@router.message(CommandStart())
 async def hello(message: types.Message):
+    messages = requests.get('http://127.0.0.1:8000/api/v1/messages/').json()
     await message.answer('''Здравствуйте! Я бот трэкера задач
     #https://short-tracker.acceleratorpracticum.ru. Чем я могу Вам помочь?''',
                          reply_markup=start_keyboard)
@@ -42,12 +44,23 @@ async def get_token(message: types.Message, state: FSMContext):
         'password': data_fsm['password']
     }
     get_token = requests.post(
-        'http://127.0.0.1:8000/api/v1/auth/jwt/create/',
+        'http://127.0.0.1:8000/api/v1/auth/login/',
         data=data
     )
-
-    await state.update_data(new_token=get_token.json())
+    token = get_token.cookies.get('jwt_access')
+    await state.update_data(new_token=f'Bearer {token}')
     data_fsm = await state.get_data()
+    token = data_fsm['new_token']
+    headers = {
+        'Authorization': token
+    }
+    # messages = requests.get(
+    #     'http://127.0.0.1:8000/api/v1/messages/',
+    #     headers=headers
+    # ).json()
+    # for msg in messages['results']:
+    #     await message.answer(msg['message_body'])
+
 
 
 
