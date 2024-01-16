@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from message.models import Reply, Message
 
-from api.v1.serializers import ShortUserSerializer
+from api.v1.tasks.serializers import ShortUserSerializer
 
 User = get_user_model()
 
