@@ -15,6 +15,8 @@ class TaskFilter(FilterSet):
     - status: Filter tasks by the status.
     - description: Filter tasks based on the description field.
     - is_expired: Filter tasks based on whether they are expired.
+    - start_date: Filter tasks based on the start date.
+    - end_date: Filter tasks based on the end date.
     """
 
     creator = filters.CharFilter(field_name='creator__id',)
@@ -22,6 +24,10 @@ class TaskFilter(FilterSet):
     status = filters.CharFilter(field_name='status',)
     description = filters.CharFilter(method='filter_description',)
     is_expired = filters.BooleanFilter(method='filter_is_expired',)
+    start_date = filters.DateFilter(
+        field_name='create_date', lookup_expr=('gt')
+    )
+    end_date = filters.DateFilter(field_name='create_date', lookup_expr=('lt'))
 
     class Meta:
         model = Task
