@@ -1,19 +1,31 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .schemas import schema_view
-from .views import TaskViewSet
 from .message.views import MessageViewSet, ReplyViewSet
+from api.v1.schemas import schema_view
+from api.v1.tasks.views import TaskViewSet
+from api.v1.users.views import (
+    login,
+    logout,
+    refresh_token,
+)
 
 router_v1 = DefaultRouter()
 router_v1.register('tasks', TaskViewSet, basename='tasks')
 router_v1.register('messages', MessageViewSet, basename='messages')
 router_v1.register('replies', ReplyViewSet, basename='replies')
 
+auth_url = [
+    path('login/', login, name='login'),
+    path('refresh/', refresh_token, name='refresh_token'),
+    path('logout/', logout, name='logout'),
+]
+
+
 urlpatterns = [
     path('', include('djoser.urls')),
     path('', include(router_v1.urls)),
-    path('auth/', include('djoser.urls.jwt')),
+    path('auth/', include(auth_url)),
     path(
         'swagger<format>/',
         schema_view.without_ui(cache_timeout=0),
