@@ -9,7 +9,7 @@ from api.v1.users.views import (
     logout,
     refresh_token,
 )
->>>>>>> dev
+
 
 router_v1 = DefaultRouter()
 router_v1.register('tasks', TaskViewSet, basename='tasks')
