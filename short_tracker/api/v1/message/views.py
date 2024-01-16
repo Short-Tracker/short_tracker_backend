@@ -1,11 +1,14 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
 from .serializers import MessageSerializer, ReplySerializer
 from message.models import Message, Reply
 
 
-class QuestionViewSet(ModelViewSet):
+class MessageViewSet(ModelViewSet):
     """Вьюсет запрос к тимлиду."""
     serializer_class = MessageSerializer
+    filter_backends = (DjangoFilterBackend, )
+    filterset_fields = ('task', 'message_status', )
 
     def get_queryset(self):
         user = self.request.user
@@ -16,7 +19,7 @@ class QuestionViewSet(ModelViewSet):
         serializer.save(user=user)
 
 
-class AnswerViewSet(ModelViewSet):
+class ReplyViewSet(ModelViewSet):
     """Вьюсет ответа от тимлида.."""
     serializer_class = ReplySerializer
     queryset = Reply.objects.all()

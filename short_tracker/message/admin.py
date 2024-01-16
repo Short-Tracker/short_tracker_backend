@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Answer, Question
+from .models import Message, Reply, MessageStatus
 
-admin.site.register(Answer)
-admin.site.register(Question)
+admin.site.register(Message)
+admin.site.register(Reply)
+admin.site.register(MessageStatus)

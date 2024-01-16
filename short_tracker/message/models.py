@@ -1,13 +1,16 @@
 from django.db import models
-from users.models import CustomUser
+from django.contrib.auth import get_user_model
 from tasks.models import Task
+
+
+User = get_user_model()
 
 
 class Message(models.Model):
     """Модель вопроса по задаче."""
 
     sender = models.ForeignKey(
-        CustomUser,
+        User,
         on_delete=models.CASCADE,
         related_name='messages',
         verbose_name='Отправитель'
@@ -27,6 +30,13 @@ class Message(models.Model):
         'Дата',
         auto_now=True
     )
+    message_status = models.ForeignKey(
+        'MessageStatus',
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='message',
+        verbose_name='Статус'
+    )
 
     def __str__(self):
         return self.message_body
@@ -43,7 +53,7 @@ class Reply(models.Model):
     """Модель ответа на запрос от исполнителя."""
 
     author = models.ForeignKey(
-        CustomUser,
+        User,
         on_delete=models.CASCADE,
         related_name='reply',
         verbose_name='Автор ответа'
@@ -52,7 +62,7 @@ class Reply(models.Model):
         Message,
         on_delete=models.CASCADE,
         related_name='reply',
-        verbose_name='Cjj,otybt'
+        verbose_name='Сообщение'
     )
     reply_body = models.TextField(
         'Текст'
@@ -71,3 +81,17 @@ class Reply(models.Model):
         indexes = [
             models.Index(fields=['reply_date', ])
         ]
+
+
+class MessageStatus(models.Model):
+    name = models.CharField(
+        'Статус сообщения',
+        max_length=8
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Статус сообщения'
+        verbose_name_plural = 'Статусы сообщений'

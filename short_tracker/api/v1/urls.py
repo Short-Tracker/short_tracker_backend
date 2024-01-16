@@ -3,12 +3,12 @@ from rest_framework.routers import DefaultRouter
 
 from .schemas import schema_view
 from .views import TaskViewSet
-from .message.views import AnswerViewSet, QuestionViewSet
+from .message.views import MessageViewSet, ReplyViewSet
 
 router_v1 = DefaultRouter()
 router_v1.register('tasks', TaskViewSet, basename='tasks')
-router_v1.register('answers', AnswerViewSet, basename='answers')
-router_v1.register('questions', QuestionViewSet, basename='questions')
+router_v1.register('messages', MessageViewSet, basename='messages')
+router_v1.register('replies', ReplyViewSet, basename='replies')
 
 urlpatterns = [
     path('', include('djoser.urls')),
