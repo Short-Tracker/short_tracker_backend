@@ -1,7 +1,8 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.viewsets import ModelViewSet
-from .serializers import MessageSerializer, ReplySerializer
 from message.models import Message, Reply
+from rest_framework.viewsets import ModelViewSet
+
+from .serializers import MessageSerializer, ReplySerializer
 
 
 class MessageViewSet(ModelViewSet):

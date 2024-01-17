@@ -1,7 +1,7 @@
-from django.db import models
 from django.contrib.auth import get_user_model
-from tasks.models import Task
+from django.db import models
 
+from tasks.models import Task
 
 User = get_user_model()
 
