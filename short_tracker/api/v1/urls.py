@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .message.views import MessageViewSet, ReplyViewSet
+from api.v1.bot.views import BotAPIView
 from api.v1.schemas import schema_view
 from api.v1.tasks.views import TaskViewSet
 from api.v1.users.views import (
@@ -42,4 +43,5 @@ urlpatterns = [
         schema_view.with_ui('redoc', cache_timeout=0),
         name='schema-redoc'
     ),
+    path('bot/', BotAPIView.as_view(), name='bot')
 ]

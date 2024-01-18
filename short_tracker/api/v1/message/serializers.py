@@ -7,8 +7,15 @@ from api.v1.users.serializers import ShortUserSerializer
 User = get_user_model()
 
 
+class ReplyShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reply
+        fields = ['reply_body', 'reply_date']
+
+
 class MessageSerializer(serializers.ModelSerializer):
     recipient = serializers.SerializerMethodField()
+    reply = ReplyShortSerializer(many=True)
 
     def get_recipient(self, obj):
         queryset = User.objects.filter(is_team_lead=True)
