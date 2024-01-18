@@ -29,7 +29,7 @@ class Task(models.Model):
     creator = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='creator_tasks',
+        related_name='created_tasks',
         verbose_name=_('creator'),
         help_text=_('The creator of the task'),
     )
