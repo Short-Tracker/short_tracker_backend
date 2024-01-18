@@ -35,7 +35,7 @@ class Task(models.Model):
     )
     performers = models.ManyToManyField(
         User,
-        related_name='performer_tasks',
+        related_name='tasks_for_user',
         verbose_name=_('performers'),
         help_text=_('The performers of the task'),
     )
