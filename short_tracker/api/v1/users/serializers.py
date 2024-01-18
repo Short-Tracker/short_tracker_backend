@@ -37,7 +37,7 @@ class ShortUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'id', 'full_name', 'telegram_nickname', 'email',
+            'id', 'full_name', 'telegram_nickname', 'email', 'is_team_lead'
         )
 
     def get_full_name(self, obj):
