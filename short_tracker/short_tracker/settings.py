@@ -47,6 +47,7 @@ LOCAL_APPS = [
     'api.apps.ApiConfig',
     'users.apps.UsersConfig',
     'tasks.apps.TasksConfig',
+    'message.apps.MessageConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
