@@ -62,7 +62,13 @@ class TaskFilter(FilterSet):
         """
         Filter the queryset based on the is_expired field.
         """
-        return queryset.filter(
-            deadline_date__lt=timezone.now(),
-            status__in=('in progress', 'hold', 'to do'),
-        )
+        if value:
+            queryset = queryset.filter(
+                deadline_date__lt=timezone.now(),
+                status__in=('in progress', 'hold', 'to do'),
+            )
+        else:
+            queryset = queryset.filter(
+                deadline_date__gte=timezone.now(),
+            )
+        return queryset
