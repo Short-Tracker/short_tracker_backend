@@ -7,8 +7,11 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from .filters import TaskFilter
+from .analytics import TasksAnalyticsFactory
+from .filters import TaskAnalyticsFilter, TaskFilter
+from .permissions import IsTeamLead
 from .serializers import (
+    TaskAnalyticsSerializer,
     TaskCreateSerializer,
     TaskShowSerializer,
     TaskUpdateSerializer,
@@ -106,3 +109,18 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
+
+
+class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewset):
+    queryset = Task.objects.all()
+    serializer_class = TaskAnalyticsSerializer
+    permission_classes = (IsTeamLead,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TaskAnalyticsFilter
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.serializer_class(
+            TasksAnalyticsFactory.calculate_analytics(queryset)
+        )
+        return Response(serializer.data)

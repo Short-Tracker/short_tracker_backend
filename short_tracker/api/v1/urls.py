@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .schemas import schema_view
 from .views import (
+    TaskAnalyticsViewSet,
     TaskViewSet,
     login,
     logout,
@@ -11,6 +12,9 @@ from .views import (
 
 router_v1 = DefaultRouter()
 router_v1.register('tasks', TaskViewSet, basename='tasks')
+router_v1.register(
+    'task-analytics', TaskAnalyticsViewSet, basename='task-analytics'
+)
 
 
 auth_url = [
