@@ -1,2 +1,2 @@
 TOKEN = '6787434498:AAHW5Y2gUJQLqttiQ-Vj9qulyBoTCHYYVu4'
-URL = 'http://127.0.0.1:8000/api/v1/'
+URL = 'https://short-tracker.acceleratorpracticum.ru/api/v1/'

@@ -64,7 +64,7 @@ async def get_status(state: FSMContext, bot: Bot):
             chat_id = data_fsm['chat_id']
             await get_messages(data, chat_id, bot)
 
-            for task in data['results'][0]['performers']:
+            for task in data['results'][0]['tasks_for_user']:
                 if task['description'] not in tasks_dict.keys():
                     await bot.send_message(
                         chat_id=chat_id,
