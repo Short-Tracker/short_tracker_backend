@@ -73,7 +73,7 @@ class TaskShowSerializer(TaskSerializer):
         Get the resolved status of the task.
         """
         role = 'lead' if self.context['request'].user.is_lead else 'employee'
-        return RESOLVED_STATUS[role][obj.status]
+        return RESOLVED_STATUS.get(role, 'employee').get(obj.status, ())
 
 
 class TaskCreateSerializer(TaskSerializer):
