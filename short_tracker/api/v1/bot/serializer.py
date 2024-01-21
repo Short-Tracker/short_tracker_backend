@@ -11,10 +11,10 @@ User = get_user_model()
 class BotSerializer(ModelSerializer):
     messages = MessageSerializer(many=True)
     reply = ReplySerializer(many=True)
-    performers = TaskShowSerializer(many=True)
+    tasks_for_user = TaskShowSerializer(many=True)
 
     class Meta:
         model = User
-        fields = ['messages', 'reply', 'performers']
+        fields = ['messages', 'reply', 'tasks_for_user']
 
 
