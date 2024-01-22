@@ -88,7 +88,7 @@ class TaskUpdateSerializer(TaskCreateSerializer):
 
     def update(self, instance, validated_data):
         if 'status' in validated_data:
-            validated_data[
-                STATUS_TIME.get(validated_data.get('status'))
-            ] = timezone.now().date()
+            time = STATUS_TIME.get(validated_data.get('status'))
+            if time:
+                validated_data[time] = timezone.now().date()
         return super().update(instance, validated_data)
