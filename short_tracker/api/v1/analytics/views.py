@@ -9,7 +9,7 @@ from api.v1.permissions import IsTeamLead
 from tasks.models import Task
 
 
-class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewset):
+class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskAnalyticsSerializer
     permission_classes = (IsTeamLead,)
@@ -19,6 +19,6 @@ class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewset):
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.serializer_class(
-        TasksAnalyticsFactory.calculate_analytics(queryset)
+            TasksAnalyticsFactory.calculate_analytics(queryset)
         )
         return Response(serializer.data)
