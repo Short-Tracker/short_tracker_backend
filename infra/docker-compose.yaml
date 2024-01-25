@@ -7,7 +7,7 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env
-  
+
   frontend:
     container_name: frontend
     image: zali1813/short_tracker_frontend:v1
@@ -28,7 +28,7 @@ services:
     #   - frontend
     env_file:
       - ./.env
-  
+
   nginx:
     image: nginx:1.21.3-alpine
     ports:
@@ -40,6 +40,11 @@ services:
       - media_value:/var/html/media/
     # depends_on:
     #   - backend
+  bot:
+    build:
+      context: ../short_tracker_bot
+      dockerfile: Dockerfile
+    
 
 volumes:
   static_value:
