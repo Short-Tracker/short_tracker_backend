@@ -1,15 +1,18 @@
 import asyncio
 import logging
+import os
 
+import dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from config import TOKEN
 from handlers.hello import router
+
+dotenv.load_dotenv()
 
 
 async def main():
-    bot = Bot(token=TOKEN)
+    #bot = Bot(token=os.getenv('TOKEN'))
     memory = MemoryStorage()
     dp = Dispatcher(memory=memory)
     dp.include_router(router)
