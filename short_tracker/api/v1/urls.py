@@ -1,6 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
+from .bot.views import BotAPIView
 from .message.views import MessageViewSet, ReplyViewSet
 from api.v1.analytics.views import TaskAnalyticsViewSet
 from api.v1.schemas import schema_view
