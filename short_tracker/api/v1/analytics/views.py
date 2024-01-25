@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 
 from .analytics import TasksAnalyticsFactory
@@ -9,7 +9,7 @@ from api.v1.permissions import IsTeamLead
 from tasks.models import Task
 
 
-class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewset):
+class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskAnalyticsSerializer
     permission_classes = (IsTeamLead,)
@@ -18,7 +18,8 @@ class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewset):
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.serializer_class(
-        TasksAnalyticsFactory.calculate_analytics(queryset)
+        serializer = TaskAnalyticsSerializer(
+            data=TasksAnalyticsFactory.calculate_analytics(queryset)
         )
-        return Response(serializer.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

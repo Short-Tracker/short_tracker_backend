@@ -1,4 +1,6 @@
-from django.db.models import ExpressionWrapper, F, Sum, fields
+import datetime
+
+from django.db.models import F
 
 from tasks.models import Task
 
@@ -8,58 +10,57 @@ class TasksAnalyticsFactory:
     def calculate_analytics(queryset):
         analytics = {}
         total_tasks = queryset.count()
-        analytics.update({
-            'completed_on_time_count': queryset.filter(
-                status=Task.TaskStatus.DONE,
-                finish_date__lte=F('deadline_date')
-            ).count(),
-            'completed_with_delay_count': queryset.filter(
-                status=Task.TaskStatus.DONE,
-                finish_date__gt=F('deadline_date')
-            ).count(),
-        })
-
         analytics.update(
-            TasksAnalyticsFactory._calculate_percentage(analytics, total_tasks)
+            TasksAnalyticsFactory.tasks_count(queryset, total_tasks)
         )
-
-        analytics.update(
-            TasksAnalyticsFactory._calculate_average_time(
-                queryset, total_tasks
+        avg_time = {
+            'avg_time_create_date_to_inprogress_date': 
+                TasksAnalyticsFactory.avg_time(
+                    queryset, 'create_date', 'inprogress_date'
+            ),
+            'avg_time_create_date_to_done_date': 
+                TasksAnalyticsFactory.avg_time(
+                    queryset, 'create_date', 'done_date'
+            ),
+            'avg_time_inprogress_date_to_done_date': 
+                TasksAnalyticsFactory.avg_time(
+                    queryset, 'inprogress_date', 'done_date'
             )
-        )
-
+        }
+        analytics.update(**avg_time)
         return analytics
 
     @staticmethod
-    def _calculate_percentage(analytics, total_tasks):
+    def tasks_count(queryset, total_tasks):
+        completed_on_time_count = queryset.filter(
+            status=Task.TaskStatus.DONE,
+            done_date__lte=F('deadline_date')
+        ).count()
+        completed_with_delay_count = queryset.filter(
+            status=Task.TaskStatus.DONE,
+            done_date__gt=F('deadline_date')
+        ).count()
+        completed_on_time_percentage = (
+            completed_on_time_count / total_tasks
+        ) * 100 if total_tasks > 0 else 0
+        completed_with_delay_percentage = (
+            completed_with_delay_count / total_tasks
+        ) * 100 if total_tasks > 0 else 0
         return {
-            f'{key}_percentage': (
-                (value / total_tasks) * 100
-            ) if total_tasks > 0 else 0
-            for key, value in analytics.items()
+            'completed_on_time_count': completed_on_time_count,
+            'completed_with_delay_count': completed_with_delay_count,
+            'completed_on_time_percentage': completed_on_time_percentage,
+            'completed_with_delay_percentage': completed_with_delay_percentage,
         }
 
     @staticmethod
-    def _calculate_average_times(queryset, total_tasks):
-        def calculate_avg_time(field1, field2):
-            avg_time_key = f'average_time_{field1}_to_{field2}'
-            avg_time = queryset.filter(
-                status=Task.TaskStatus.DONE,
-                **{f'{field1}__isnull': False, f'{field2}__isnull': False}
-            ).aggregate(
-                avg_time=ExpressionWrapper(
-                    Sum(F(field2) - F(field1)),
-                    output_field=fields.DurationField()
-                )
-            )['avg_time']
-
-            return {
-                avg_time_key: avg_time / total_tasks if total_tasks > 0 else 0
-            }
-
-        return {
-            **calculate_avg_time('start_date', 'inprogress_date'),
-            **calculate_avg_time('start_date', 'finish_date'),
-            **calculate_avg_time('inprogress_date', 'finish_date'),
-        }
+    def avg_time(queryset, field1, field2):
+        datetime_list = [
+            getattr(task, field2) - getattr(task, field1)
+            for task in queryset
+            if task.status == Task.TaskStatus.DONE and
+            getattr(task, field1) and getattr(task, field2)
+        ]
+        sum_of_time = sum(datetime_list, datetime.timedelta())
+        length = len(datetime_list)
+        return sum_of_time // length if length > 0 else "00:00:00"
