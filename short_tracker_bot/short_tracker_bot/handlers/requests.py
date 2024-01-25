@@ -8,7 +8,7 @@ async def request_get(url, headers=None):
             return data
 
 
-async def request_post(url, data):
+async def request_post(url, data, headers):
     async with aiohttp.ClientSession() as session:
-        async with session.post(url, data=data) as response:
+        async with session.post(url, data=data, headers=headers) as response:
             return response

@@ -7,12 +7,15 @@ from keyboards.keyboards import start_keyboard
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from short_tracker_bot.handlers.requests import request_get, request_post
-from short_tracker_bot.config import URL
+from .requests import request_get, request_post
+from config import  URL
 
 router = Router()
 OLD_MESSAGES = []
 OLD_REPLIES = []
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
+}
 
 
 class Login(StatesGroup):
@@ -22,13 +25,13 @@ class Login(StatesGroup):
     refresh_token = State()
 
 
-async def refresh_token(url, token, state):
-    data = {
-        'refresh': token
-    }
-    data = await request_post(url, data)
-    token = data.cookies.get('jwt_access').value
-    return token
+# async def refresh_token(url, token, state):
+#     data = {
+#         'refresh': token
+#     }
+#     data = await request_post(url, data)
+#     token = data.cookies.get('jwt_access').value
+#     return token
 
 
 async def get_messages(data, chat_id, bot: Bot):
@@ -52,10 +55,12 @@ async def get_status(state: FSMContext, bot: Bot):
     data_fsm = await state.get_data()
     token = data_fsm['new_token']
     headers = {
-        'Authorization': token
+        'Authorization': token,
+
     }
     tasks_dict = dict()
     tasks_expired = []
+    headers.update(HEADERS)
     while True:
         try:
             data = await request_get(
@@ -63,7 +68,6 @@ async def get_status(state: FSMContext, bot: Bot):
                 headers=headers)
             chat_id = data_fsm['chat_id']
             await get_messages(data, chat_id, bot)
-
             for task in data['results'][0]['tasks_for_user']:
                 if task['description'] not in tasks_dict.keys():
                     await bot.send_message(
@@ -123,16 +127,22 @@ async def get_token(message: types.Message, state: FSMContext, bot: Bot):
     try:
         request = await request_post(
             URL + 'auth/login/',
-            data
+            data,
+            headers=HEADERS
+
         )
+        print(request)
         token = request.cookies.get('jwt_access')
-        refresh_token = request.cookies.get('jwt_refresh')
+
+        print(token)
         if token:
             await state.update_data(new_token=f'Bearer {token.value}')
-            data_fsm = await state.get_data()
             await message.delete()
-            await state.update_data(refresh_token=f'Bearer {refresh_token.value}')
+            print('status')
             await get_status(state, bot)
+        else:
+            await bot.send_message(data_fsm['chat_id'], 'Неверный логин или пароль')
+            await state.set_state(Login.email)
     except Exception:
         await bot.send_message(data_fsm['chat_id'], 'Нет соединения')
         await message.delete()
