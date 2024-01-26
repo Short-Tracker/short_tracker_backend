@@ -12,7 +12,7 @@ dotenv.load_dotenv()
 
 
 async def main():
-    #bot = Bot(token=os.getenv('TOKEN'))
+    bot = Bot(token=os.getenv('TOKEN'))
     memory = MemoryStorage()
     dp = Dispatcher(memory=memory)
     dp.include_router(router)
