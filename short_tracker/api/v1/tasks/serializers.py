@@ -53,7 +53,7 @@ class TaskShowSerializer(TaskSerializer):
 
     class Meta(TaskSerializer.Meta):
         fields = TaskSerializer.Meta.fields + (
-            'creator', 'performers', 'is_expired', 'resolved_status',
+            'id', 'creator', 'performers', 'is_expired', 'resolved_status',
         )
         read_only_fields = TaskSerializer.Meta.read_only_fields + (
             'is_expired', 'resolved_status',
