@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import ModelSerializer
 
-from api.v1.tasks.serializers import TaskShowSerializer
 from api.v1.message.serializers import MessageSerializer, ReplySerializer
-
+from api.v1.tasks.serializers import TaskShowSerializer
 
 User = get_user_model()
 

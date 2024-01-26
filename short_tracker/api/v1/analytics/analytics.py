@@ -1,4 +1,5 @@
 import datetime
+from datetime import timedelta
 
 from django.db.models import F
 
@@ -41,11 +42,11 @@ class TasksAnalyticsFactory:
             done_date__gt=F('deadline_date')
         ).count()
         completed_on_time_percentage = (
-            completed_on_time_count / total_tasks
-        ) * 100 if total_tasks > 0 else 0
+            int((completed_on_time_count / total_tasks) * 100)
+        ) if total_tasks > 0 else 0
         completed_with_delay_percentage = (
-            completed_with_delay_count / total_tasks
-        ) * 100 if total_tasks > 0 else 0
+            int((completed_with_delay_count / total_tasks) * 100)
+        ) if total_tasks > 0 else 0
         return {
             'completed_on_time_count': completed_on_time_count,
             'completed_with_delay_count': completed_with_delay_count,
@@ -63,4 +64,5 @@ class TasksAnalyticsFactory:
         ]
         sum_of_time = sum(datetime_list, datetime.timedelta())
         length = len(datetime_list)
-        return sum_of_time // length if length > 0 else "00:00:00"
+        avg_time = sum_of_time // length if length > 0 else timedelta()
+        return str(avg_time).rsplit(':', 1)[0]
