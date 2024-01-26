@@ -125,7 +125,7 @@ async def get_data(state: FSMContext, bot: Bot):
         except Exception:
             logging.error('Не удалось получить данные')
         finally:
-            await asyncio.sleep(30)
+            await asyncio.sleep(600)
 
 
 @router.message(CommandStart())
