@@ -30,13 +30,33 @@ class Login(StatesGroup):
     refresh_token = State()
 
 
-# async def refresh_token(url, token, state):
-#     data = {
-#         'refresh': token
-#     }
-#     data = await request_post(url, data)
-#     token = data.cookies.get('jwt_access').value
-#     return token
+async def get_token(state, bot):
+    data_fsm = await state.get_data()
+    data = {
+        'email': data_fsm['email'],
+        'password': data_fsm['password']
+    }
+    logging.info(f'email, password {data}')
+    try:
+        request = await request_post(
+            URL + 'auth/login/',
+            data,
+            headers=HEADERS
+        )
+        logging.info(f'ЗАПРОС ТОКЕНА{request}')
+        token = request.cookies.get('jwt_access')
+        if token:
+            await state.update_data(new_token=f'Bearer {token.value}')
+            data_fsm = await state.get_data()
+            logging.info(f'NEW TOKEN {data_fsm["new_token"]}')
+            return data_fsm['new_token']
+        else:
+            await bot.send_message(
+                data_fsm['chat_id'],
+                'Неверный логин или пароль. Введите пароль еще раз:')
+            await state.set_state(Login.email)
+    except Exception:
+        await bot.send_message(data_fsm['chat_id'], 'Нет соединения')
 
 
 async def get_messages(data, chat_id, bot: Bot):
@@ -56,35 +76,46 @@ async def get_messages(data, chat_id, bot: Bot):
                 )
 
 
-async def get_status(state: FSMContext, bot: Bot):
+async def get_data(state: FSMContext, bot: Bot):
     data_fsm = await state.get_data()
     token = data_fsm['new_token']
     headers = {
         'Authorization': token,
     }
     headers.update(HEADERS)
+    chat_id = data_fsm['chat_id']
+    logging.info(f'HEADERS {headers}')
     while True:
         try:
             data = await request_get(
                 URL + 'bot/',
                 headers=headers)
-            chat_id = data_fsm['chat_id']
             logging.info(f'ЗАПРОС ДАННЫХ {data}')
+            if data.get('detail'):
+                logging.info(f'Запрос токена при истечении срока {token}')
+                new_token = await get_token(state, bot)
+                headers['Authorization'] = new_token
+                logging.info(f'NEW Token {new_token}')
+                logging.info(f'New headers {headers}')
+                data = await request_get(
+                    URL + 'bot/',
+                    headers=headers)
+            logging.info('Запрос сообщений')
             await get_messages(data, chat_id, bot)
             for task in data['results'][0]['tasks_for_user']:
-                if task['description'] not in TASKS_DICT.keys():
+                if task['id'] not in TASKS_DICT.keys():
                     await bot.send_message(
                         chat_id=chat_id,
                         text=f'У Вас появилась новая задача \"{task["description"]}\"'
                     )
-                    TASKS_DICT[task['description']] = task['status']
-                if task['status'] != TASKS_DICT[task['description']]:
-                    TASKS_DICT[task['description']] = task['status']
+                    TASKS_DICT[task['id']] = task['status']
+                if task['status'] != TASKS_DICT[task['id']]:
+                    TASKS_DICT[task['id']] = task['status']
                     await bot.send_message(
                         chat_id=chat_id,
                         text=f'Изменен статус задачи \"{task["description"]}\" на {task["status"]}')
-                if task['is_expired'] and task['description'] not in TASKS_EXPIRED:
-                    TASKS_EXPIRED.append(task['description'])
+                if task['is_expired'] and task['id'] not in TASKS_EXPIRED:
+                    TASKS_EXPIRED.append(task['id'])
                     performers = [performer['full_name'] for performer in task['performers']]
                     await bot.send_message(
                         chat_id=chat_id,
@@ -92,19 +123,12 @@ async def get_status(state: FSMContext, bot: Bot):
                              f' {", ".join(performers)} просрочена'
                     )
         except Exception:
-            await bot.send_message(data_fsm['chat_id'], 'Произошла ошибка')
+            logging.error('Не удалось получить данные')
         finally:
-            await asyncio.sleep(600)
+            await asyncio.sleep(30)
 
 
 @router.message(CommandStart())
-async def hello(message: types.Message):
-    await message.answer('''Здравствуйте! Я бот трэкера задач
-    #https://short-tracker.acceleratorpracticum.ru. Чем я могу Вам помочь?''',
-                         reply_markup=start_keyboard)
-
-
-@router.message(F.text == '/войти')
 async def email(message: types.Message, state: FSMContext):
     await state.update_data(chat_id=message.chat.id)
     await state.set_state(Login.email)
@@ -120,28 +144,8 @@ async def password(message: types.Message, state: FSMContext):
 
 
 @router.message(Login.password)
-async def get_token(message: types.Message, state: FSMContext, bot: Bot):
+async def main_func(message: types.Message, state: FSMContext, bot: Bot):
     await state.update_data(password=message.text)
-    data_fsm = await state.get_data()
-    data = {
-        'email': data_fsm['email'],
-        'password': data_fsm['password']
-    }
-    try:
-        request = await request_post(
-            URL + 'auth/login/',
-            data,
-            headers=HEADERS
-        )
-        logging.info(f'ЗАПРОС ТОКЕНА{request}')
-        token = request.cookies.get('jwt_access')
-        if token:
-            await state.update_data(new_token=f'Bearer {token.value}')
-            await message.delete()
-            await get_status(state, bot)
-        else:
-            await bot.send_message(data_fsm['chat_id'], 'Неверный логин или пароль')
-            await state.set_state(Login.email)
-    except Exception:
-        await bot.send_message(data_fsm['chat_id'], 'Нет соединения')
-        await message.delete()
+    await get_token(state, bot)
+    await message.delete()
+    await get_data(state, bot)
