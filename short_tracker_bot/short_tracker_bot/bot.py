@@ -6,6 +6,7 @@ import dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
+from config import COMMANDS
 from handlers.hello import router
 
 dotenv.load_dotenv()
@@ -16,6 +17,7 @@ async def main():
     memory = MemoryStorage()
     dp = Dispatcher(memory=memory)
     dp.include_router(router)
+    await bot.set_my_commands(commands=COMMANDS)
     await dp.start_polling(bot)
 
 
