@@ -44,8 +44,7 @@ services:
     build:
       context: ../short_tracker_bot
       dockerfile: Dockerfile
-    restart: always
-
+    
 
 volumes:
   static_value:
