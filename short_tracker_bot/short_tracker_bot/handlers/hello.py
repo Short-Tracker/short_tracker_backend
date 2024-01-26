@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from aiogram import F, Router, Bot
 from aiogram import types
@@ -8,13 +9,17 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
 from .requests import request_get, request_post
-from config import  URL
+from config import URL
 
 router = Router()
 OLD_MESSAGES = []
 OLD_REPLIES = []
+TASKS_DICT = dict()
+TASKS_EXPIRED = []
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+                  ' AppleWebKit/537.36 (KHTML, like Gecko)'
+                  ' Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
 }
 
 
@@ -56,10 +61,7 @@ async def get_status(state: FSMContext, bot: Bot):
     token = data_fsm['new_token']
     headers = {
         'Authorization': token,
-
     }
-    tasks_dict = dict()
-    tasks_expired = []
     headers.update(HEADERS)
     while True:
         try:
@@ -67,21 +69,22 @@ async def get_status(state: FSMContext, bot: Bot):
                 URL + 'bot/',
                 headers=headers)
             chat_id = data_fsm['chat_id']
+            logging.info(f'ЗАПРОС ДАННЫХ {data}')
             await get_messages(data, chat_id, bot)
             for task in data['results'][0]['tasks_for_user']:
-                if task['description'] not in tasks_dict.keys():
+                if task['description'] not in TASKS_DICT.keys():
                     await bot.send_message(
                         chat_id=chat_id,
                         text=f'У Вас появилась новая задача \"{task["description"]}\"'
                     )
-                    tasks_dict[task['description']] = task['status']
-                if task['status'] != tasks_dict[task['description']]:
-                    tasks_dict[task['description']] = task['status']
+                    TASKS_DICT[task['description']] = task['status']
+                if task['status'] != TASKS_DICT[task['description']]:
+                    TASKS_DICT[task['description']] = task['status']
                     await bot.send_message(
                         chat_id=chat_id,
                         text=f'Изменен статус задачи \"{task["description"]}\" на {task["status"]}')
-                if task['is_expired'] and task['description'] not in tasks_expired:
-                    tasks_expired.append(task['description'])
+                if task['is_expired'] and task['description'] not in TASKS_EXPIRED:
+                    TASKS_EXPIRED.append(task['description'])
                     performers = [performer['full_name'] for performer in task['performers']]
                     await bot.send_message(
                         chat_id=chat_id,
@@ -91,7 +94,7 @@ async def get_status(state: FSMContext, bot: Bot):
         except Exception:
             await bot.send_message(data_fsm['chat_id'], 'Произошла ошибка')
         finally:
-            await asyncio.sleep(15)
+            await asyncio.sleep(600)
 
 
 @router.message(CommandStart())
@@ -129,16 +132,12 @@ async def get_token(message: types.Message, state: FSMContext, bot: Bot):
             URL + 'auth/login/',
             data,
             headers=HEADERS
-
         )
-        print(request)
+        logging.info(f'ЗАПРОС ТОКЕНА{request}')
         token = request.cookies.get('jwt_access')
-
-        print(token)
         if token:
             await state.update_data(new_token=f'Bearer {token.value}')
             await message.delete()
-            print('status')
             await get_status(state, bot)
         else:
             await bot.send_message(data_fsm['chat_id'], 'Неверный логин или пароль')
