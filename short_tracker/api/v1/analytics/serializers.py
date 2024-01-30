@@ -6,12 +6,12 @@ from tasks.models import Task
 
 class TaskAnalyticsSerializer(serializers.ModelSerializer):
     completed_on_time_count = serializers.IntegerField()
-    completed_on_time_percentage = serializers.FloatField()
+    completed_on_time_percentage = serializers.IntegerField()
     completed_with_delay_count = serializers.IntegerField()
-    completed_with_delay_percentage = serializers.FloatField()
-    avg_time_create_date_to_inprogress_date = serializers.DurationField()
-    avg_time_create_date_to_done_date  = serializers.DurationField()
-    avg_time_inprogress_date_to_done_date  = serializers.DurationField()
+    completed_with_delay_percentage = serializers.IntegerField()
+    avg_time_create_date_to_inprogress_date = serializers.CharField()
+    avg_time_create_date_to_done_date  = serializers.CharField()
+    avg_time_inprogress_date_to_done_date  = serializers.CharField()
     
     class Meta(TaskSerializer.Meta):
         model = Task 
