@@ -2,6 +2,7 @@ name: short tracker backend workflow
 on: [push]
 env:
   BACKEND_IMAGE: ${{ secrets.DOCKER_USERNAME }}/short_tracker_backend:v1
+  BOT_IMAGE: ${{ secrets.DOCKER_USERNAME }}/short_tracker_bot:v1
   
 jobs:
   build_and_push_to_docker_hub:
@@ -28,6 +29,13 @@ jobs:
           push: true
           file: ./short_tracker/Dockerfile
           tags: ${{ env.BACKEND_IMAGE }}
+      
+      - name: Push bot to Docker Hub
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          file: ./short_tracker_bot/Dockerfile
+          tags: ${{ env.BOT_IMAGE }}
           
   deploy:
     runs-on: ubuntu-latest
@@ -43,6 +51,7 @@ jobs:
           script: |
             sudo docker-compose stop
             sudo docker pull ${{ env.BACKEND_IMAGE }}
+            sudo docker pull ${{ env.BOT_IMAGE }}
             sudo docker-compose up -d
             sudo docker image prune -f
             

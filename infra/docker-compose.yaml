@@ -7,7 +7,7 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env
-  
+
   frontend:
     container_name: frontend
     image: zali1813/short_tracker_frontend:v1
@@ -15,7 +15,7 @@ services:
     volumes:
       - ../frontend/:/app/result_build/
     # depends_on:
-    #   - db
+    #  - db
 
   backend:
     container_name: backend
@@ -25,10 +25,10 @@ services:
       - static_value:/app/static/
       - media_value:/app/media/
     # depends_on:
-    #   - frontend
+    #  - frontend
     env_file:
       - ./.env
-  
+
   nginx:
     image: nginx:1.21.3-alpine
     ports:
@@ -39,7 +39,16 @@ services:
       - static_value:/var/html/static/
       - media_value:/var/html/media/
     # depends_on:
-    #   - backend
+    #  - backend
+  
+  bot:
+    container_name: bot
+    image: zali1813/short_tracker_bot:v1
+    restart: always
+    env_file:
+      - ./.env
+    # depends_on:
+    #  - backend
 
 volumes:
   static_value:
