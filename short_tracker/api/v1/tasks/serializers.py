@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from api.v1.users.serializers import ShortUserSerializer
 from tasks.models import Task
+from users.models import ROLES
 
 User = get_user_model()
 
@@ -35,11 +36,11 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = (
-            'description', 'status', 'create_date', 'inprogress_date',
+            'id', 'description', 'status', 'create_date', 'inprogress_date',
             'done_date', 'deadline_date', 'archive_date', 'link'
         )
         read_only_fields = (
-            'archive_date', 'inprogress_date', 'done_date', 'is_expired'
+            'id', 'archive_date', 'inprogress_date', 'done_date', 'is_expired'
         )
 
 
@@ -53,7 +54,7 @@ class TaskShowSerializer(TaskSerializer):
 
     class Meta(TaskSerializer.Meta):
         fields = TaskSerializer.Meta.fields + (
-            'id', 'creator', 'performers', 'is_expired', 'resolved_status',
+            'creator', 'performers', 'is_expired', 'resolved_status',
         )
         read_only_fields = TaskSerializer.Meta.read_only_fields + (
             'is_expired', 'resolved_status',
@@ -72,8 +73,10 @@ class TaskShowSerializer(TaskSerializer):
         """
         Get the resolved status of the task.
         """
-        role = 'lead' if self.context['request'].user.is_lead else 'employee'
-        return RESOLVED_STATUS.get(role, 'employee').get(obj.status, ())
+        is_lead = self.context['request'].user.is_lead
+        role = ROLES.get('lead') if is_lead else ROLES.get('employee')
+        return RESOLVED_STATUS.get(
+            role, ROLES.get('employee')).get(obj.status, ())
 
 
 class TaskCreateSerializer(TaskSerializer):
@@ -91,4 +94,9 @@ class TaskUpdateSerializer(TaskCreateSerializer):
             time = STATUS_TIME.get(validated_data.get('status'))
             if time:
                 validated_data[time] = timezone.now().date()
+            if (
+                validated_data.get('status') == task_status.DONE
+                and timezone.now().date() <= instance.deadline_date
+            ):
+                validated_data['get_medals'] = True
         return super().update(instance, validated_data)
