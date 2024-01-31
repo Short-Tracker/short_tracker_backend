@@ -5,7 +5,6 @@ import os
 import dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-
 from config import COMMANDS
 from handlers.hello import router
 

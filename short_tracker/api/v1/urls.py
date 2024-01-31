@@ -1,16 +1,12 @@
+from api.v1.analytics.views import TaskAnalyticsViewSet
+from api.v1.schemas import schema_view
+from api.v1.tasks.views import TaskViewSet
+from api.v1.users.views import login, logout, refresh_token
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .bot.views import BotAPIView
 from .message.views import MessageViewSet, ReplyViewSet
-from api.v1.analytics.views import TaskAnalyticsViewSet
-from api.v1.schemas import schema_view
-from api.v1.tasks.views import TaskViewSet
-from api.v1.users.views import (
-    login,
-    logout,
-    refresh_token,
-)
 
 router_v1 = DefaultRouter()
 router_v1.register('tasks', TaskViewSet, basename='tasks')

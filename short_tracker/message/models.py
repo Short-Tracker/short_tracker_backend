@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-
 from tasks.models import Task
 
 User = get_user_model()
@@ -28,7 +27,7 @@ class Message(models.Model):
     )
     message_date = models.DateTimeField(
         'Дата',
-        auto_now=True
+        auto_now_add=True
     )
     message_status = models.ForeignKey(
         'MessageStatus',

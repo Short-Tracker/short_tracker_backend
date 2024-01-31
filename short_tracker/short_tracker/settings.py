@@ -102,7 +102,6 @@ else:
         }
     }
 
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -148,9 +147,9 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-   'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-   'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-   'ROTATE_REFRESH_TOKENS': True,
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
 }
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -165,3 +164,17 @@ DJOSER = {
         'user_create': 'api.v1.users.serializers.UserCreateSerializer',
     },
 }
+
+
+REDIS_HOST = "0.0.0.0"
+REDIS_PORT = "6379"
+
+CELERY_BROKER_URL = "redis://" + "127.0.0.1" + ":" + REDIS_PORT + "/0"
+CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
+CELERY_RESULT_BACKEND = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
+SOLVED_MESSAGE_DELETE = 72

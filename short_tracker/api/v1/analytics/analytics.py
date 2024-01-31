@@ -2,7 +2,6 @@ import datetime
 from datetime import timedelta
 
 from django.db.models import F
-
 from tasks.models import Task
 
 

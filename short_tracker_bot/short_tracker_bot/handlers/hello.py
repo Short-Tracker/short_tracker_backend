@@ -1,15 +1,14 @@
 import asyncio
 import logging
 
-from aiogram import F, Router, Bot
-from aiogram import types
+from aiogram import Bot, F, Router, types
 from aiogram.filters import CommandStart
-from keyboards.keyboards import start_keyboard
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from config import URL
+from keyboards.keyboards import start_keyboard
 
 from .requests import request_get, request_post
-from config import URL
 
 router = Router()
 OLD_MESSAGES = []

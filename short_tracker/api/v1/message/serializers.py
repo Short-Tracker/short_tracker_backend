@@ -1,8 +1,7 @@
+from api.v1.users.serializers import ShortUserSerializer
 from django.contrib.auth import get_user_model
 from message.models import Message, Reply
 from rest_framework import serializers
-
-from api.v1.users.serializers import ShortUserSerializer
 
 User = get_user_model()
 
