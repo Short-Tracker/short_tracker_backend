@@ -62,7 +62,59 @@ class TaskFilter(FilterSet):
         """
         Filter the queryset based on the is_expired field.
         """
-        return queryset.filter(
-            deadline_date__lt=timezone.now(),
-            status__in=('in progress', 'hold', 'to do'),
-        )
+        if value:
+            queryset = queryset.filter(
+                deadline_date__lt=timezone.now(),
+                status__in=('in progress', 'hold', 'to do'),
+            )
+        else:
+            queryset = queryset.filter(
+                deadline_date__gte=timezone.now(),
+            )
+        return queryset
+
+
+class TaskAnalyticsFilter(FilterSet):
+    performer_id = filters.NumberFilter(
+        field_name='performers', method='filter_by_performer'
+    )
+    week = filters.NumberFilter(
+        field_name='start_date__week', method='filter_by_week'
+    )
+    month = filters.NumberFilter(
+        field_name='start_date__month', method='filter_by_month'
+    )
+    custom_period = filters.DateFromToRangeFilter(
+        field_name='start_date', method='filter_by_custom_period'
+    )
+
+    class Meta:
+        model = Task
+        fields = ['week', 'month', 'custom_period']
+
+    def filter_by_performer(self, queryset, name, value):
+        if value:
+            return queryset.filter(performers__in=[value])
+        return queryset
+
+    def filter_by_week(self, queryset, name, value):
+        performer_id = self.request.query_params.get('performer_id')
+        if value:
+            return queryset.filter(
+                create_date__week=value, performers__id=performer_id)
+        return queryset
+
+    def filter_by_month(self, queryset, name, value):
+        performer_id = self.request.query_params.get('performer_id')
+        if value:
+            return queryset.filter(
+                create_date__month=value, performers__id=performer_id)
+        return queryset
+
+    def filter_by_custom_period(self, queryset, name, value):
+        performer_id = self.request.query_params.get('performer_id')
+        if value:
+            return queryset.filter(
+                create_date__range=(value.start, value.stop),
+                performers__id=performer_id)
+        return queryset
