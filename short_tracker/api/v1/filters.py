@@ -76,8 +76,7 @@ class TaskFilter(FilterSet):
 
 class TaskAnalyticsFilter(FilterSet):
     performer_id = filters.NumberFilter(
-        field_name='performers', method='filter_by_performer'
-    )
+        field_name='performers', method='filter_by_performer')
     week = filters.NumberFilter(
         field_name='start_date__week', method='filter_by_week'
     )
@@ -98,23 +97,19 @@ class TaskAnalyticsFilter(FilterSet):
         return queryset
 
     def filter_by_week(self, queryset, name, value):
-        performer_id = self.request.query_params.get('performer_id')
         if value:
             return queryset.filter(
-                create_date__week=value, performers__id=performer_id)
+                create_date__week=value)
         return queryset
 
     def filter_by_month(self, queryset, name, value):
-        performer_id = self.request.query_params.get('performer_id')
         if value:
             return queryset.filter(
-                create_date__month=value, performers__id=performer_id)
+                create_date__month=value)
         return queryset
 
     def filter_by_custom_period(self, queryset, name, value):
-        performer_id = self.request.query_params.get('performer_id')
         if value:
             return queryset.filter(
-                create_date__range=(value.start, value.stop),
-                performers__id=performer_id)
+                create_date__range=(value.start, value.stop))
         return queryset
