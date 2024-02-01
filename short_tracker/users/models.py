@@ -3,8 +3,14 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
+ROLES = {
+    'lead': 'lead',
+    'employee': 'employee',
+}
+
 
 class UserManager(BaseUserManager):
+
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
