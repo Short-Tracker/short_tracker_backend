@@ -13,9 +13,10 @@ class TasksAnalyticsFactory:
         analytics.update(
             TasksAnalyticsFactory.tasks_count(queryset)
         )
-        performers_analytics = TasksAnalyticsFactory.performers_analytics(
-            queryset)
-        analytics.update(performers_analytics)
+        analytics.update(
+            TasksAnalyticsFactory.performers_analytics(
+                queryset)
+        )
         return analytics
 
     @staticmethod
@@ -32,9 +33,8 @@ class TasksAnalyticsFactory:
     @staticmethod
     def performers_analytics(queryset):
         performers_analytics = {}
-        performers_ids = queryset.filter(
-            performers__is_team_lead=False).values_list(
-                'performers', flat=True).distinct()
+        performers_ids = queryset.values_list(
+            'performers', flat=True).distinct()
         for performer_id in performers_ids:
             performer = CustomUser.objects.get(id=performer_id)
             filtered_queryset = queryset.filter(performers=performer)
