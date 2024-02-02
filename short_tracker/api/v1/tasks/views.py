@@ -1,9 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.db.models import F, Q
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework.filters import SearchFilter
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+
 
 from .serializers import (
     TaskCreateSerializer,
@@ -23,6 +26,16 @@ class TaskViewSet(viewsets.ModelViewSet):
     search_fields = ['performers__first_name', 'performers__last_name']
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'search',
+                openapi.IN_QUERY,
+                description="A search term to filter first and last names",
+                type=openapi.TYPE_STRING)])
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
     def get_permissions(self):
         if self.action == 'create':
             return (IsLeadOrPerformerHimselfOnly(),)
