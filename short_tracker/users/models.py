@@ -70,7 +70,7 @@ class CustomUser(AbstractUser):
             )],
     )
     telegram_nickname = models.CharField(
-        max_length=32,
+        max_length=33,
         verbose_name='Никнейм Телеграм',
         unique=True,
         validators=[
