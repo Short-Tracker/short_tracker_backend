@@ -72,9 +72,10 @@ class CustomUser(AbstractUser):
     telegram_nickname = models.CharField(
         max_length=32,
         verbose_name='Никнейм Телеграм',
+        unique=True,
         validators=[
             RegexValidator(
-                regex=r'^@[a-zA-Z0-9_]{5,32}\Z',
+                regex=r'^@[a-zA-Z0-9_]{5,33}\Z',
                 message='nickname содержит недопустимый символ'
             )],
     )
