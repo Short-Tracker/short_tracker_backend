@@ -92,6 +92,12 @@ class CustomUser(AbstractUser):
         default=False,
         verbose_name='Роль',
     )
+    photo = models.ImageField(
+        upload_to='profile_photo/',
+        null=True,
+        blank=True,
+        default=None
+    )
 
     class Meta:
         verbose_name = 'Пользователь'

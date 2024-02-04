@@ -31,6 +31,7 @@ urlpatterns = [
     path('', include('djoser.urls')),
     path('', include(router_v1.urls)),
     path('auth/', include(auth_url)),
+    # path('add_photo/', add_photo, name='add_photo'),
     path(
         'swagger<format>/',
         schema_view.without_ui(cache_timeout=0),

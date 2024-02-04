@@ -1,5 +1,8 @@
 from django.conf import settings as django_settings
 from django.contrib.auth import get_user_model
+
+# from django.http import HttpResponseRedirect
+# from django.shortcuts import render
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -7,6 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
+# from api.v1.users.forms import UploadFileForm
 from api.v1.schemas import (
     LOGIN_DONE_SCHEMA,
     LOGIN_SCHEMA,
@@ -109,3 +113,22 @@ def logout(request):
     response.delete_cookie('jwt_refresh', samesite='None',)
 
     return response
+
+
+# def add_photo(request):
+#     response = Response(
+#         data={'signout': ('Вы успешно вышли из учетной записи!')},
+#         status=status.HTTP_200_OK
+#     )
+#     response.
+
+
+# def add_photo(request):
+#     if request.method == 'POST':
+#         form = UploadFileForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save()
+#             # return HttpResponseRedirect('/success/url/')
+#     # else:
+#     #     form = UploadFileForm()
+#     return render(request, 'poll/articles.html', {'form': form})
