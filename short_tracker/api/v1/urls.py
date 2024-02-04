@@ -15,7 +15,7 @@ from api.v1.users.views import (
 router_v1 = DefaultRouter()
 router_v1.register('tasks', TaskViewSet, basename='tasks')
 router_v1.register(
-    'task-analytics', TaskAnalyticsViewSet, basename='task-analytics'
+   'task-analytics', TaskAnalyticsViewSet, basename='task-analytics'
 )
 router_v1.register('messages', MessageViewSet, basename='messages')
 router_v1.register('replies', ReplyViewSet, basename='replies')
