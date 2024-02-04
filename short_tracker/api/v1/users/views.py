@@ -1,5 +1,8 @@
 from django.conf import settings as django_settings
 from django.contrib.auth import get_user_model
+
+# from django.http import HttpResponseRedirect
+# from django.shortcuts import render
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -7,6 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
+# from api.v1.users.forms import UploadFileForm
 from api.v1.schemas import (
     LOGIN_DONE_SCHEMA,
     LOGIN_SCHEMA,

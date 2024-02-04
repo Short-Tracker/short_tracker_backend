@@ -159,6 +159,7 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'HIDE_USERS': False,
+    'PERMISSIONS': {'user_create': ['api.v1.permissions.IsTeamLead']},
     'SERIALIZERS': {
         'user': 'api.v1.users.serializers.UserSerializer',
         'current_user': 'api.v1.users.serializers.UserSerializer',
