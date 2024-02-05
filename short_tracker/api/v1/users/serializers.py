@@ -32,22 +32,12 @@ class UserSerializer(serializers.ModelSerializer):
 class ShortUserSerializer(serializers.ModelSerializer):
     """Serializer for short representation of users."""
 
-    full_name = serializers.SerializerMethodField()
-
     class Meta:
         model = User
         fields = (
-            'id', 'full_name', 'telegram_nickname', 'email', 'is_team_lead'
+            'id', 'telegram_nickname', 'email',
+            'first_name', 'last_name', 'is_team_lead'
         )
-
-    def get_full_name(self, obj):
-        """
-        Get the full name of an object or return the nickname of telegram.
-        """
-
-        if obj.last_name and obj.first_name:
-            return f'{obj.first_name} {obj.last_name[:1]}.'
-        return 'ФИО не указано.'
 
 
 class AuthSignInSerializer(serializers.Serializer):
