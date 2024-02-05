@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db.models import F, Q
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter
 from rest_framework import viewsets
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import (
@@ -25,7 +25,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'create':
-            return (IsAuthenticated(), IsLeadOrPerformerHimselfOnly(),)
+            return (IsLeadOrPerformerHimselfOnly(),)
         elif self.action == 'partial_update':
             return (IsCreatorOnly(),)
         return super().get_permissions()
