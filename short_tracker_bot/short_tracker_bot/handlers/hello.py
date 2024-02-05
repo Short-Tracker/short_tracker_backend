@@ -1,15 +1,13 @@
 import asyncio
 import logging
 
-from aiogram import F, Router, Bot
-from aiogram import types
+from aiogram import Bot, Router, types
 from aiogram.filters import CommandStart
-from keyboards.keyboards import start_keyboard
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from config import URL
 
 from .requests import request_get, request_post
-from config import URL
 
 router = Router()
 OLD_MESSAGES = []
@@ -116,7 +114,9 @@ async def get_data(state: FSMContext, bot: Bot):
                         text=f'Изменен статус задачи \"{task["description"]}\" на {task["status"]}')
                 if task['is_expired'] and task['id'] not in TASKS_EXPIRED:
                     TASKS_EXPIRED.append(task['id'])
-                    performers = [performer['full_name'] for performer in task['performers']]
+                    performers = [
+                        performer['full_name']
+                        for performer in task['performers']]
                     await bot.send_message(
                         chat_id=chat_id,
                         text=f'Задача \"{task["description"]}\" сотрудника'

@@ -2,6 +2,7 @@ import pytest
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
 @pytest.fixture
 def user_1(django_user_model):
     return django_user_model.objects.create(
