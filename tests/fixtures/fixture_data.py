@@ -10,6 +10,10 @@ from tasks.models import Task
     {'creator': 'team_lead_user', 'performer': 'user_1', 'deadline': True},
     {'creator': 'team_lead_user', 'performer': 'user_1', 'deadline': False},
     {'creator': 'team_lead_user', 'performer': 'user_1', 'deadline': False},
+    {
+        'creator': 'team_lead_user',
+        'performer': 'team_lead_user', 'deadline': False
+    },
 ])
 def task(request, user_1, team_lead_user):
     task_params = request.param
