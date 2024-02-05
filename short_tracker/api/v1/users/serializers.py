@@ -3,7 +3,6 @@ from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
 
-
 User = get_user_model()
 
 
