@@ -25,7 +25,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'create':
-            return (IsLeadOrPerformerHimselfOnly(),)
+            return (IsAuthenticated(), IsLeadOrPerformerHimselfOnly(),)
         elif self.action == 'partial_update':
             return (IsCreatorOnly(),)
         return super().get_permissions()
