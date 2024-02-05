@@ -3,64 +3,71 @@ from datetime import timedelta
 
 from django.db.models import F
 
-from tasks.models import Task
+from users.models import CustomUser
 
 
 class TasksAnalyticsFactory:
     @staticmethod
     def calculate_analytics(queryset):
         analytics = {}
-        total_tasks = queryset.count()
         analytics.update(
-            TasksAnalyticsFactory.tasks_count(queryset, total_tasks)
+            TasksAnalyticsFactory.tasks_count(queryset)
         )
-        avg_time = {
-            'avg_time_create_date_to_inprogress_date': 
-                TasksAnalyticsFactory.avg_time(
-                    queryset, 'create_date', 'inprogress_date'
-            ),
-            'avg_time_create_date_to_done_date': 
-                TasksAnalyticsFactory.avg_time(
-                    queryset, 'create_date', 'done_date'
-            ),
-            'avg_time_inprogress_date_to_done_date': 
-                TasksAnalyticsFactory.avg_time(
-                    queryset, 'inprogress_date', 'done_date'
-            )
-        }
-        analytics.update(**avg_time)
+        analytics.update(
+            TasksAnalyticsFactory.performers_analytics(
+                queryset)
+        )
         return analytics
 
     @staticmethod
-    def tasks_count(queryset, total_tasks):
-        completed_on_time_count = queryset.filter(
-            status=Task.TaskStatus.DONE,
-            done_date__lte=F('deadline_date')
-        ).count()
-        completed_with_delay_count = queryset.filter(
-            status=Task.TaskStatus.DONE,
-            done_date__gt=F('deadline_date')
-        ).count()
-        completed_on_time_percentage = (
-            int((completed_on_time_count / total_tasks) * 100)
-        ) if total_tasks > 0 else 0
-        completed_with_delay_percentage = (
-            int((completed_with_delay_count / total_tasks) * 100)
-        ) if total_tasks > 0 else 0
+    def tasks_count(queryset):
         return {
-            'completed_on_time_count': completed_on_time_count,
-            'completed_with_delay_count': completed_with_delay_count,
-            'completed_on_time_percentage': completed_on_time_percentage,
-            'completed_with_delay_percentage': completed_with_delay_percentage,
+            'total_tasks_on_time': 
+            queryset.filter(
+                done_date__lte=F('deadline_date')).count(),
+            'total_tasks_with_delay':
+            queryset.filter(
+                done_date__gt=F('deadline_date')).count()
         }
+    
+    @staticmethod
+    def performers_analytics(queryset):
+        performers_analytics = {}
+        performers_ids = queryset.values_list(
+            'performers', flat=True).distinct()
+        for performer_id in performers_ids:
+            performer = CustomUser.objects.get(id=performer_id)
+            filtered_queryset = queryset.filter(performers=performer)
+            performer_name = f"{performer.first_name} {performer.last_name}"
+            completed_on_time_count = filtered_queryset.filter(
+                done_date__lte=F('deadline_date'),
+                performers=performer).count()
+            completed_with_delay_count = filtered_queryset.filter(
+                done_date__gt=F('deadline_date'),
+                performers=performer).count()
+            performers_analytics[performer_id] = {
+                'performer_name': performer_name,
+                'completed_on_time_count': completed_on_time_count,
+                'completed_with_delay_count': 
+                completed_with_delay_count,
+                'avg_time_create_date_to_inprogress_date': 
+                TasksAnalyticsFactory.avg_time(
+                    filtered_queryset, 'create_date', 'inprogress_date'),
+                'avg_time_create_date_to_done_date': 
+                TasksAnalyticsFactory.avg_time(
+                    filtered_queryset, 'create_date', 'done_date'),
+                'avg_time_inprogress_date_to_done_date': 
+                TasksAnalyticsFactory.avg_time(
+                    filtered_queryset, 'inprogress_date', 'done_date'),
+            }
+        return {'performers_analytics': performers_analytics}
 
     @staticmethod
     def avg_time(queryset, field1, field2):
         datetime_list = [
             getattr(task, field2) - getattr(task, field1)
             for task in queryset
-            if task.status == Task.TaskStatus.DONE and
-            getattr(task, field1) and getattr(task, field2)
+            if getattr(task, field1) and getattr(task, field2)
         ]
         sum_of_time = sum(datetime_list, datetime.timedelta())
         length = len(datetime_list)

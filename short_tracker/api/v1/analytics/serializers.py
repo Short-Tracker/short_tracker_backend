@@ -1,40 +1,30 @@
 from rest_framework import serializers
 
-from api.v1.tasks.serializers import TaskSerializer
-from tasks.models import Task
 
-
-class TaskAnalyticsSerializer(serializers.ModelSerializer):
+class PerformerAnalyticsSerializer(serializers.Serializer):
+    performer_name = serializers.CharField()
     completed_on_time_count = serializers.IntegerField()
-    completed_on_time_percentage = serializers.IntegerField()
     completed_with_delay_count = serializers.IntegerField()
-    completed_with_delay_percentage = serializers.IntegerField()
     avg_time_create_date_to_inprogress_date = serializers.CharField()
-    avg_time_create_date_to_done_date  = serializers.CharField()
-    avg_time_inprogress_date_to_done_date  = serializers.CharField()
-    
-    class Meta(TaskSerializer.Meta):
-        model = Task 
-        fields = (
-            'completed_on_time_count', 'completed_on_time_percentage',
-            'completed_with_delay_count', 'completed_with_delay_percentage',
-            'avg_time_create_date_to_inprogress_date',
-            'avg_time_create_date_to_done_date',
-            'avg_time_inprogress_date_to_done_date',
+    avg_time_create_date_to_done_date = serializers.CharField()
+    avg_time_inprogress_date_to_done_date = serializers.CharField()
+
+class TaskAnalyticsSerializer(serializers.Serializer):
+    total_tasks_on_time = serializers.IntegerField()
+    total_tasks_with_delay = serializers.IntegerField()
+    performers_analytics = serializers.DictField(
+        child=PerformerAnalyticsSerializer(), allow_empty=True, default={})
+
+    def create(self, validated_data):
+        total_tasks_on_time = validated_data.get('total_tasks_on_time', 0)
+        total_tasks_with_delay = validated_data.get('total_tasks_with_delay', 0)
+        performers_analytics_data = validated_data.get(
+            'performers_analytics', {}
         )
-    
-    def validate(self, data):
-        validated_data = super().validate(data)
-        total_tasks = self.context.get('total_tasks', None)
-        total_percentage = (
-            validated_data['completed_on_time_percentage'] +
-            validated_data['completed_with_delay_percentage']
-        )
-        if (
-            total_tasks is not None and 
-            total_tasks > 0 and 
-            total_percentage != 100):
-            raise serializers.ValidationError(
-                "Сумма процентов должна быть равна 100%."
-            )
-        return validated_data
+
+        task_analytics_instance = {
+            'total_tasks_on_time': total_tasks_on_time,
+            'total_tasks_with_delay': total_tasks_with_delay,
+            'performers_analytics': performers_analytics_data
+        }
+        return task_analytics_instance
