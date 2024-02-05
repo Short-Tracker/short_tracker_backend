@@ -1,5 +1,4 @@
-from aiogram.utils.keyboard import ReplyKeyboardMarkup, KeyboardButton
-
+from aiogram.utils.keyboard import KeyboardButton, ReplyKeyboardMarkup
 
 keyboard_button = KeyboardButton(text='/войти')
 
