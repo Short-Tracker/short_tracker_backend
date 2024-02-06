@@ -5,38 +5,43 @@ import pytest
 from tasks.models import Task
 
 
-@pytest.fixture(params=[
-    {'creator': 'user_1', 'performer': 'user_1', 'deadline': True},
-    {'creator': 'team_lead_user', 'performer': 'user_1', 'deadline': True},
-    {'creator': 'team_lead_user', 'performer': 'user_1', 'deadline': False},
-    {'creator': 'team_lead_user', 'performer': 'user_1', 'deadline': False},
-    {
-        'creator': 'team_lead_user',
-        'performer': 'team_lead_user', 'deadline': False
-    },
-])
-def task(request, user_1, team_lead_user):
-    task_params = request.param
-    deadline = (
-        date.today() + timedelta(days=7)
-        if task_params['deadline'] 
-        else date.today() - timedelta(days=7)
-    )
-    creator_user = (
-        user_1
-        if task_params['creator'] == 'user'
-        else team_lead_user)
-    performer_user = (
-        team_lead_user
-        if task_params['performer'] == 'team_lead'
-        else user_1)
-    task = Task.objects.create(
-        creator=creator_user,
-        description= (
-            f'Task {"with" if task_params["deadline"] else "without"} '
-            f'deadline'),
-            deadline_date=deadline,
+@pytest.fixture
+def create_task(user_1, team_lead_user):
+    def _create_task(creator, performers, has_deadline):
+        create_date = date.today() - timedelta(days=15)
+        inprogress_date = create_date + timedelta(days=4)
+        done_date = inprogress_date + timedelta(days=2)
+        creator_user = user_1 if creator == 'user_1' else team_lead_user
+        performers_users = [
+            team_lead_user
+            if performer == 'team_lead'
+            else user_1 for performer in performers]
+        deadline_date = (
+            done_date - timedelta(days=1)
+            if has_deadline else done_date + timedelta(days=3))
+        task_data = Task.objects.create(
+            creator=creator_user,
+            link="https://short-tracker.acceleratorpracticum.ru/",
+            description=(
+                f'Task {"with" if has_deadline else "without"} deadline'),
             status=Task.TaskStatus.DONE,
-    )
-    task.performers.set([performer_user])
-    return task
+            create_date=create_date,
+            inprogress_date=inprogress_date,
+            done_date=done_date,
+            deadline_date = deadline_date,
+            get_medals=True,
+        )
+        task_data.performers.set(performers_users)
+        return task_data
+    return _create_task
+
+
+@pytest.fixture
+def tasks(create_task):
+    return [
+        create_task('user_1', 'user_1', True),
+        create_task('team_lead_user', 'user_1', True),
+        create_task('team_lead_user', 'user_1', False),
+        create_task('team_lead_user', 'user_1', False),
+        create_task('team_lead_user', 'user_1', False),
+    ]
