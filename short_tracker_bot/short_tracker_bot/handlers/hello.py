@@ -87,10 +87,10 @@ async def get_tasks(data, chat_id, bot: Bot):
                 task['status']
             )
         if task['status'] != get_data_from_redis(
-                f'{chat_id}_task_{task["id"]}'
+                f'{chat_id}_task_status_{task["id"]}'
         ):
             await save_data_to_redis(
-                f'{chat_id}_task_{task["id"]}',
+                f'{chat_id}_task_status_{task["id"]}',
                 task["status"]
             )
             await bot.send_message(
