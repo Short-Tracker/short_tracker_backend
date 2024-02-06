@@ -49,10 +49,10 @@ services:
       - redis_data:/data
   bot:
     container_name: bot
-    #image: zali1813/short_tracker_bot:v1
-    build:
-      context: ../short_tracker_bot
-      dockerfile: Dockerfile
+    image: zali1813/short_tracker_bot:v1
+#    build:
+#      context: ../short_tracker_bot
+#      dockerfile: Dockerfile
     restart: always
     env_file:
       - ./.env
