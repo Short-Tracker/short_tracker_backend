@@ -86,9 +86,11 @@ async def get_tasks(data, chat_id, bot: Bot):
                 f'{chat_id}_task_{task["id"]}',
                 task['status']
             )
-        if task['status'] != get_data_from_redis(
+        current_status = await get_data_from_redis(
                 f'{chat_id}_task_status_{task["id"]}'
-        ):
+        )
+        if task['status'] != current_status:
+            logging.info(f'Сравнение {task["status"], current_status}')
             await save_data_to_redis(
                 f'{chat_id}_task_status_{task["id"]}',
                 task["status"]
