@@ -52,8 +52,12 @@ async def get_token(state, bot):
 
 
 async def get_messages(data, chat_id, bot: Bot):
+    logging.info('Вход в функцию получения сообщений')
     for msg in data['results'][0]['messages']:
-        if not get_data_from_redis(f'{chat_id}_msg_{msg["id"]}'):
+        logging.info(msg)
+        message_in_redis = get_data_from_redis(f'{chat_id}_msg_{msg["id"]}')
+        logging.info(message_in_redis)
+        if not message_in_redis:
             await save_data_to_redis(
                 f'{chat_id}_msg_{msg["id"]}', msg['message_body']
             )
@@ -62,7 +66,8 @@ async def get_messages(data, chat_id, bot: Bot):
                 text=f'У вас новое сообщение\n\"{msg["message_body"]}\"'
             )
         for reply in msg['reply']:
-            if not get_data_from_redis(f'{chat_id}_reply_{msg["id"]}'):
+            reply_in_redis = await get_data_from_redis(f'{chat_id}_reply_{msg["id"]}')
+            if not reply_in_redis:
                 await save_data_to_redis(
                     f'{chat_id}_reply_{msg["id"]}',
                     reply["reply_body"]
@@ -138,7 +143,7 @@ async def get_data(state: FSMContext, bot: Bot):
                 data = await request_get(
                     URL + 'bot/',
                     headers=headers)
-            logging.info('Запрос сообщений')
+            logging.info(f'Запрос сообщений')
             await get_messages(data, chat_id, bot)
             await get_tasks(data, chat_id, bot)
         except Exception:
