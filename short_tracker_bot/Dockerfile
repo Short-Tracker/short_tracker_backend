@@ -6,6 +6,8 @@ COPY short_tracker_bot/requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache-dir
 
+RUN chmod 755 .
+
 COPY ./short_tracker_bot .
 
 # RUN python3 short_tracker_bot/bot.py

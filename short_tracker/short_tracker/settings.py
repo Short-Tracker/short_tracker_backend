@@ -148,8 +148,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-   'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-   'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+   'ACCESS_TOKEN_LIFETIME': timedelta(hours=8),
+   'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
    'ROTATE_REFRESH_TOKENS': True,
 }
 
@@ -159,6 +159,7 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'HIDE_USERS': False,
+    'PERMISSIONS': {'user_create': ['api.v1.permissions.IsTeamLead']},
     'SERIALIZERS': {
         'user': 'api.v1.users.serializers.UserSerializer',
         'current_user': 'api.v1.users.serializers.UserSerializer',
