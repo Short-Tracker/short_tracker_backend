@@ -11,7 +11,8 @@ from .serializers import (
     TaskUpdateSerializer,
 )
 from api.v1.filters import TaskFilter
-from api.v1.permissions import IsCreatorOnly, IsLeadOrPerformerHimselfOnly
+from api.v1.permissions import (IsCreatorAndLidOrPerformerOnly,
+                                IsLeadOrPerformerHimselfOnly)
 from tasks.models import Task
 
 User = get_user_model()
@@ -27,7 +28,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return (IsLeadOrPerformerHimselfOnly(),)
         elif self.action == 'partial_update':
-            return (IsCreatorOnly(),)
+            return (IsCreatorAndLidOrPerformerOnly(),)
         return super().get_permissions()
 
     def get_queryset(self):
