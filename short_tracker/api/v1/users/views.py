@@ -1,8 +1,9 @@
 from django.conf import settings as django_settings
 from django.contrib.auth import get_user_model
 
-# from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 # from django.shortcuts import render
+from django.core.files.storage import default_storage
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -10,7 +11,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-# from api.v1.users.forms import UploadFileForm
+from api.v1.users.forms import UploadFileForm
 from api.v1.schemas import (
     LOGIN_DONE_SCHEMA,
     LOGIN_SCHEMA,
@@ -115,20 +116,24 @@ def logout(request):
     return response
 
 
-# def add_photo(request):
-#     response = Response(
-#         data={'signout': ('Вы успешно вышли из учетной записи!')},
-#         status=status.HTTP_200_OK
-#     )
-#     response.
-
-
-# def add_photo(request):
-#     if request.method == 'POST':
-#         form = UploadFileForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             form.save()
-#             # return HttpResponseRedirect('/success/url/')
-#     # else:
-#     #     form = UploadFileForm()
-#     return render(request, 'poll/articles.html', {'form': form})
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def photo(request):
+    # if request.method == 'POST':
+    form = UploadFileForm(request.POST, request.FILES)
+    if form.is_valid():
+        image_file = request.FILES['file']
+        file_name = default_storage.save(
+            'images/' + image_file.name, image_file
+        )
+        file_url = default_storage.url(file_name)
+        return JsonResponse(
+            {'message': 'Фотография успешно загружена', 'file_url': file_url}
+        )
+    else:
+        return JsonResponse(
+            {'message': 'Неверный формат файла'}, status=400
+        )
+    # else:
+    #     form = UploadFileForm()
+    # return render(request, 'your_template.html', {'form': form})
