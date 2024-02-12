@@ -54,9 +54,10 @@ async def get_messages(data, chat_id, bot: Bot):
     logging.info('Вход в функцию получения сообщений')
     for msg in data['results'][0]['messages']:
         logging.info(msg)
-        message_in_redis = get_data_from_redis(f'{chat_id}_msg_{msg["id"]}')
+        message_in_redis = await get_data_from_redis(f'{chat_id}_msg_{msg["id"]}')
         logging.info(message_in_redis)
         if not message_in_redis:
+            logging.info(message_in_redis)
             await save_data_to_redis(
                 f'{chat_id}_msg_{msg["id"]}', msg['message_body']
             )
@@ -66,7 +67,9 @@ async def get_messages(data, chat_id, bot: Bot):
             )
         for reply in msg['reply']:
             reply_in_redis = await get_data_from_redis(f'{chat_id}_reply_{msg["id"]}')
+            logging.info(reply_in_redis)
             if not reply_in_redis:
+                logging.info(reply_in_redis)
                 await save_data_to_redis(
                     f'{chat_id}_reply_{msg["id"]}',
                     reply["reply_body"]
@@ -80,7 +83,11 @@ async def get_messages(data, chat_id, bot: Bot):
 
 async def get_tasks(data, chat_id, bot: Bot):
     for task in data['results'][0]['tasks_for_user']:
-        if not get_data_from_redis(f'{chat_id}_task_{task["id"]}'):
+        old_task = await get_data_from_redis(f'{chat_id}_task_{task["id"]}')
+        logging.info('вход задачи')
+        logging.info(old_task)
+        if not old_task:
+            logging.info(old_task)
             await bot.send_message(
                 chat_id=chat_id,
                 text=f'У Вас появилась новая задача'
@@ -93,8 +100,9 @@ async def get_tasks(data, chat_id, bot: Bot):
         current_status = await get_data_from_redis(
             f'{chat_id}_task_status_{task["id"]}'
         )
+        logging.info('вход статус')
+        logging.info(current_status)
         if task['status'] != current_status:
-            logging.info(f'Сравнение {task["status"], current_status}')
             await save_data_to_redis(
                 f'{chat_id}_task_status_{task["id"]}',
                 task["status"]
@@ -103,14 +111,24 @@ async def get_tasks(data, chat_id, bot: Bot):
                 chat_id=chat_id,
                 text=f'Изменен статус задачи '
                      f'\"{task["description"]}\" на {task["status"]}')
-        if task['is_expired'] and not get_data_from_redis(
+        old_data_deadline = await get_data_from_redis(
                 f'{chat_id}_status_{task["id"]}'
-        ):
+        )
+        logging.info('вход дедлайн')
+        logging.info(type(old_data_deadline))
+        logging.info(type(task['is_expired']))
+        # if task['is_expired']:
+        #     logging.info('expired')
+        if not old_data_deadline:
+            logging.info('dedline')
             await save_data_to_redis(
                 f'{chat_id}_status_{task["id"]}',
-                task['is_expired']
+                ''
             )
+            logging.info(task['performers'])
+            logging.info(task)
             performers = [performer['full_name'] for performer in task['performers']]
+            logging.info('performers')
             await bot.send_message(
                 chat_id=chat_id,
                 text=f'Задача \"{task["description"]}\" сотрудника'
@@ -162,7 +180,6 @@ async def get_data(state: FSMContext, bot: Bot):
 @router.message(CommandStart())
 async def email(message: types.Message, state: FSMContext):
     await state.update_data(chat_id=message.chat.id)
-
     await state.set_state(Login.email)
     await message.answer('Введите свою почту')
 
