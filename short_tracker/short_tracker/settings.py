@@ -48,6 +48,7 @@ LOCAL_APPS = [
     'users.apps.UsersConfig',
     'tasks.apps.TasksConfig',
     'message.apps.MessageConfig',
+    'bot.apps.BotConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

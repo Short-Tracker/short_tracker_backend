@@ -10,7 +10,7 @@ class MessageViewSet(ModelViewSet):
     """Вьюсет запрос к тимлиду."""
     serializer_class = MessageSerializer
     filter_backends = (DjangoFilterBackend, )
-    filterset_fields = ('task', 'message_status', 'id')
+    filterset_fields = ('task', 'message_status', )
 
     def get_queryset(self):
         user = self.request.user
