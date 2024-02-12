@@ -98,7 +98,7 @@ async def get_tasks(data, chat_id, bot: Bot):
                 task['status']
             )
         current_status = await get_data_from_redis(
-                f'{chat_id}_task_status_{task["id"]}'
+            f'{chat_id}_task_status_{task["id"]}'
         )
         logging.info('вход статус')
         logging.info(current_status)
@@ -136,6 +136,13 @@ async def get_tasks(data, chat_id, bot: Bot):
             )
 
 
+async def get_allows(allows, data, chat_id, bot):
+    if allows['notification'] == 'msg' and allows['allow_notification']:
+        await get_messages(data, chat_id, bot)
+    if allows['notification'] == 'tasks' and allows['allow_notification']:
+        await get_tasks(data, chat_id, bot)
+
+
 async def get_data(state: FSMContext, bot: Bot):
     data_fsm = await state.get_data()
     token = data_fsm['new_token']
@@ -147,6 +154,7 @@ async def get_data(state: FSMContext, bot: Bot):
     logging.info(f'HEADERS {headers}')
     while True:
         try:
+            logging.info(URL + 'bot/')
             data = await request_get(
                 URL + 'bot/',
                 headers=headers)
@@ -161,9 +169,8 @@ async def get_data(state: FSMContext, bot: Bot):
                     URL + 'bot/',
                     headers=headers)
             logging.info(f'Запрос сообщений')
-            await get_messages(data, chat_id, bot)
-            logging.info('запрос задач')
-            await get_tasks(data, chat_id, bot)
+            allows = data['allow']
+            await get_allows(allows, data, chat_id, bot)
         except Exception:
             logging.error('Не удалось получить данные')
         finally:

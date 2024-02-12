@@ -1,3 +1,4 @@
+from api.v1.filters import TaskFilter
 from django.contrib.auth import get_user_model
 from django.db.models import F, Q
 from django_filters.rest_framework import DjangoFilterBackend
@@ -14,6 +15,9 @@ from api.v1.filters import TaskFilter
 from api.v1.permissions import (IsCreatorAndLidOrPerformerOnly,
                                 IsLeadOrPerformerHimselfOnly)
 from tasks.models import Task
+
+from .serializers import (TaskCreateSerializer, TaskShowSerializer,
+                          TaskUpdateSerializer)
 
 User = get_user_model()
 

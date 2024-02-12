@@ -48,6 +48,7 @@ LOCAL_APPS = [
     'users.apps.UsersConfig',
     'tasks.apps.TasksConfig',
     'message.apps.MessageConfig',
+    'bot.apps.BotConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -101,7 +102,6 @@ else:
             'PORT': os.getenv('DB_PORT'),
         }
     }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -166,3 +166,17 @@ DJOSER = {
         'user_create': 'api.v1.users.serializers.UserCreateSerializer',
     },
 }
+
+
+REDIS_HOST = "0.0.0.0"
+REDIS_PORT = "6379"
+
+CELERY_BROKER_URL = "redis://" + "127.0.0.1" + ":" + REDIS_PORT + "/0"
+CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
+CELERY_RESULT_BACKEND = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
+SOLVED_MESSAGE_DELETE = 72

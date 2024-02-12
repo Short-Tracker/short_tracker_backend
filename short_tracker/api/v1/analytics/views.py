@@ -4,6 +4,7 @@ from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.response import Response
+from tasks.models import Task
 
 from .analytics import TasksAnalyticsFactory
 from .serializers import TaskAnalyticsSerializer

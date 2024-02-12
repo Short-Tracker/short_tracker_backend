@@ -9,6 +9,7 @@ class PerformerAnalyticsSerializer(serializers.Serializer):
     avg_time_create_date_to_done_date = serializers.CharField()
     avg_time_inprogress_date_to_done_date = serializers.CharField()
 
+
 class TaskAnalyticsSerializer(serializers.Serializer):
     total_tasks_on_time = serializers.IntegerField()
     total_tasks_with_delay = serializers.IntegerField()
