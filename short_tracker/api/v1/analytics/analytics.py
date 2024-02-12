@@ -2,12 +2,8 @@ import datetime
 from datetime import timedelta
 
 from django.db.models import F
-<<<<<<< HEAD
-from tasks.models import Task
-=======
 
 from users.models import CustomUser
->>>>>>> dev
 
 
 class TasksAnalyticsFactory:

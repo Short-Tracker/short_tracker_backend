@@ -3,8 +3,6 @@ from django.contrib.auth import get_user_model
 from django.db.models import F, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-<<<<<<< HEAD
-=======
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 
@@ -16,7 +14,6 @@ from .serializers import (
 from api.v1.filters import TaskFilter
 from api.v1.permissions import (IsCreatorAndLidOrPerformerOnly,
                                 IsLeadOrPerformerHimselfOnly)
->>>>>>> dev
 from tasks.models import Task
 
 from .serializers import (TaskCreateSerializer, TaskShowSerializer,

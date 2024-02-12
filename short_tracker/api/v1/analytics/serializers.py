@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-from api.v1.tasks.serializers import TaskSerializer
-from rest_framework import serializers
-from tasks.models import Task
-=======
 from rest_framework import serializers
 
->>>>>>> dev
 
 class PerformerAnalyticsSerializer(serializers.Serializer):
     performer_name = serializers.CharField()
@@ -14,6 +8,7 @@ class PerformerAnalyticsSerializer(serializers.Serializer):
     avg_time_create_date_to_inprogress_date = serializers.CharField()
     avg_time_create_date_to_done_date = serializers.CharField()
     avg_time_inprogress_date_to_done_date = serializers.CharField()
+
 
 class TaskAnalyticsSerializer(serializers.Serializer):
     total_tasks_on_time = serializers.IntegerField()

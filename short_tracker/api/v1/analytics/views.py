@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-from api.v1.filters import TaskAnalyticsFilter
-from api.v1.permissions import IsTeamLead
-=======
 from datetime import datetime, timedelta
 
 from django.db.models import Prefetch
->>>>>>> dev
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.response import Response
@@ -13,13 +8,10 @@ from tasks.models import Task
 
 from .analytics import TasksAnalyticsFactory
 from .serializers import TaskAnalyticsSerializer
-<<<<<<< HEAD
-=======
 from api.v1.filters import TaskAnalyticsFilter
 from api.v1.permissions import IsTeamLead
 from tasks.models import Task
 from users.models import CustomUser
->>>>>>> dev
 
 
 class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
