@@ -3,8 +3,14 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
+ROLES = {
+    'lead': 'lead',
+    'employee': 'employee',
+}
+
 
 class UserManager(BaseUserManager):
+
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
@@ -64,11 +70,12 @@ class CustomUser(AbstractUser):
             )],
     )
     telegram_nickname = models.CharField(
-        max_length=32,
+        max_length=33,
         verbose_name='Никнейм Телеграм',
+        unique=True,
         validators=[
             RegexValidator(
-                regex=r'^@[a-zA-Z0-9_]{5,32}\Z',
+                regex=r'^@[a-zA-Z0-9_]{5,33}\Z',
                 message='nickname содержит недопустимый символ'
             )],
     )

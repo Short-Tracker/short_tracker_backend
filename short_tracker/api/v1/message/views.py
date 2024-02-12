@@ -3,6 +3,7 @@ from message.models import Message, Reply
 from rest_framework.viewsets import ModelViewSet
 
 from .serializers import MessageSerializer, ReplySerializer
+from api.v1.permissions import IsTeamLead
 
 
 class MessageViewSet(ModelViewSet):
@@ -24,6 +25,7 @@ class ReplyViewSet(ModelViewSet):
     """Вьюсет ответа от тимлида.."""
     serializer_class = ReplySerializer
     queryset = Reply.objects.all()
+    permission_classes = (IsTeamLead,)
 
     def get_queryset(self):
         user = self.request.user

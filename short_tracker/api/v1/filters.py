@@ -1,3 +1,4 @@
+import django_filters
 from django.db.models import Case, Q, Value, When
 from django.utils import timezone
 from django_filters.rest_framework import FilterSet, filters
@@ -72,48 +73,20 @@ class TaskFilter(FilterSet):
             )
         return queryset
 
-
-class TaskAnalyticsFilter(FilterSet):
+class TaskAnalyticsFilter(django_filters.FilterSet):
     performer_id = filters.NumberFilter(
-        field_name='performers', method='filter_by_performer'
-    )
-    week = filters.NumberFilter(
-        field_name='start_date__week', method='filter_by_week'
-    )
-    month = filters.NumberFilter(
-        field_name='start_date__month', method='filter_by_month'
-    )
-    custom_period = filters.DateFromToRangeFilter(
-        field_name='start_date', method='filter_by_custom_period'
-    )
+        field_name='performers', method='filter_by_performer')
+    start_date = django_filters.DateFilter(
+        field_name='done_date',lookup_expr=('gt'))
+    end_date = django_filters.DateFilter(
+        field_name='done_date',lookup_expr=('lt'))
+    date_range = filters.DateRangeFilter(field_name='done_date')
 
     class Meta:
         model = Task
-        fields = ['week', 'month', 'custom_period']
-
+        fields=[]
+    
     def filter_by_performer(self, queryset, name, value):
-        if value:
+       if value:
             return queryset.filter(performers__in=[value])
-        return queryset
-
-    def filter_by_week(self, queryset, name, value):
-        performer_id = self.request.query_params.get('performer_id')
-        if value:
-            return queryset.filter(
-                create_date__week=value, performers__id=performer_id)
-        return queryset
-
-    def filter_by_month(self, queryset, name, value):
-        performer_id = self.request.query_params.get('performer_id')
-        if value:
-            return queryset.filter(
-                create_date__month=value, performers__id=performer_id)
-        return queryset
-
-    def filter_by_custom_period(self, queryset, name, value):
-        performer_id = self.request.query_params.get('performer_id')
-        if value:
-            return queryset.filter(
-                create_date__range=(value.start, value.stop),
-                performers__id=performer_id)
-        return queryset
+       return queryset
