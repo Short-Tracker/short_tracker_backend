@@ -105,7 +105,7 @@ class TaskCreateSerializer(TaskSerializer):
         performers = validated_data.pop('performers')
         if len(performers) == 1:
             validated_data['performer'] = performers[0]
-            return Task.objects.create(**validated_data)
+            return [Task.objects.create(**validated_data)]
 
         tasks = []
         for performer in performers:
