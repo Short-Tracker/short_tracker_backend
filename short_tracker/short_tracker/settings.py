@@ -144,7 +144,8 @@ REST_FRAMEWORK = {
         'users.authentication.CookieJWTAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DATETIME_FORMAT': "%d.%m.%Y %H:%M",
 }
 
 SIMPLE_JWT = {

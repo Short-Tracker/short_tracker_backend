@@ -2,6 +2,7 @@ import django_filters
 from django.db.models import Case, Q, Value, When
 from django.utils import timezone
 from django_filters.rest_framework import FilterSet, filters
+
 from tasks.models import Task
 
 
@@ -72,6 +73,7 @@ class TaskFilter(FilterSet):
                 deadline_date__gte=timezone.now(),
             )
         return queryset
+
 
 class TaskAnalyticsFilter(django_filters.FilterSet):
     performer_id = filters.NumberFilter(

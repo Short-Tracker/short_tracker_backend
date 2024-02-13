@@ -33,11 +33,12 @@ class Task(models.Model):
         verbose_name=_('creator'),
         help_text=_('The creator of the task'),
     )
-    performers = models.ManyToManyField(
+    performer = models.ForeignKey(
         User,
+        on_delete=models.CASCADE,
         related_name='tasks_for_user',
-        verbose_name=_('performers'),
-        help_text=_('The performers of the task'),
+        verbose_name=_('performer'),
+        help_text=_('The performer of the task'),
     )
     description = models.TextField(
         max_length=256,
@@ -57,28 +58,28 @@ class Task(models.Model):
         verbose_name=_('status'),
         help_text=_('The status of the task'),
     )
-    create_date = models.DateField(
+    create_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('create date'),
         help_text=_('The create date of the task'),
     )
-    inprogress_date = models.DateField(
+    inprogress_date = models.DateTimeField(
         verbose_name=_('"in progress" date'),
         help_text=_('The "in progress" date of the task'),
         blank=True,
         null=True,
     )
-    done_date = models.DateField(
+    done_date = models.DateTimeField(
         verbose_name=_('done date'),
         help_text=_('The done date of the task'),
         blank=True,
         null=True,
     )
-    deadline_date = models.DateField(
+    deadline_date = models.DateTimeField(
         verbose_name=_('deadline date'),
         help_text=_('The deadline date of the task'),
     )
-    archive_date = models.DateField(
+    archive_date = models.DateTimeField(
         verbose_name=_('archive date'),
         help_text=_('The archive date of the task'),
         blank=True,
@@ -88,11 +89,19 @@ class Task(models.Model):
         verbose_name=_('get medals'),
         default=False,
     )
+    hold = models.BooleanField(
+        default=False,
+    )
 
     class Meta:
         verbose_name = _('task')
         verbose_name_plural = _('tasks')
         ordering = ('-create_date',)
+        indexes = [
+            models.Index(fields=[
+                'create_date', 'status', 'deadline_date', 'performer',
+            ]),
+        ]
 
     def __str__(self):
         return self.description[:15]

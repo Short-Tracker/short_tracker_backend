@@ -5,11 +5,10 @@ from aiogram import Bot, Router, types
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from config import HEADERS, URL
-from keyboards.keyboards import start_keyboard
 
 from .redis_data import get_data_from_redis, save_data_to_redis
 from .requests import request_get, request_post
+from config import HEADERS, URL
 
 router = Router()
 
@@ -54,7 +53,9 @@ async def get_messages(data, chat_id, bot: Bot):
     logging.info('Вход в функцию получения сообщений')
     for msg in data['results'][0]['messages']:
         logging.info(msg)
-        message_in_redis = await get_data_from_redis(f'{chat_id}_msg_{msg["id"]}')
+        message_in_redis = await get_data_from_redis(
+            f'{chat_id}_msg_{msg["id"]}'
+        )
         logging.info(message_in_redis)
         if not message_in_redis:
             logging.info(message_in_redis)
@@ -66,7 +67,9 @@ async def get_messages(data, chat_id, bot: Bot):
                 text=f'У вас новое сообщение\n\"{msg["message_body"]}\"'
             )
         for reply in msg['reply']:
-            reply_in_redis = await get_data_from_redis(f'{chat_id}_reply_{msg["id"]}')
+            reply_in_redis = await get_data_from_redis(
+                f'{chat_id}_reply_{msg["id"]}'
+            )
             logging.info(reply_in_redis)
             if not reply_in_redis:
                 logging.info(reply_in_redis)
@@ -127,7 +130,9 @@ async def get_tasks(data, chat_id, bot: Bot):
             )
             logging.info(task['performers'])
             logging.info(task)
-            performers = [performer['full_name'] for performer in task['performers']]
+            performers = [
+                performer['full_name'] for performer in task['performers']
+            ]
             logging.info('performers')
             await bot.send_message(
                 chat_id=chat_id,
@@ -168,7 +173,7 @@ async def get_data(state: FSMContext, bot: Bot):
                 data = await request_get(
                     URL + 'bot/',
                     headers=headers)
-            logging.info(f'Запрос сообщений')
+            logging.info('Запрос сообщений')
             allows = data['allow']
             await get_allows(allows, data, chat_id, bot)
         except Exception:

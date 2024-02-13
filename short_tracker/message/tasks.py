@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from celery import shared_task
-from celery.schedules import crontab
 from django.conf import settings
 from django.utils import timezone
 

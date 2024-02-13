@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+
 from tasks.models import Task
 
 User = get_user_model()
@@ -41,6 +42,7 @@ class Message(models.Model):
         return self.message_body
 
     class Meta:
+        ordering = ['-message_date']
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
         indexes = [
