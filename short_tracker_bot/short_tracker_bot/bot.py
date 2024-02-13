@@ -7,7 +7,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 from redis import asyncio as aioredis
 from config import COMMANDS
-from handlers.hello import router
+from handlers.fsm import router
 
 dotenv.load_dotenv()
 
