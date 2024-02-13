@@ -12,6 +12,6 @@ RUN chmod 755 .
 COPY ./short_tracker_bot .
 
 WORKDIR /app/short_tracker_bot/
-# WORKDIR /app
+#WORKDIR /app
 
 CMD ["python3", "bot.py"]
