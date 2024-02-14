@@ -118,8 +118,11 @@ class TaskCreateSerializer(TaskSerializer):
         """
         Serialize objects.
         """
+        cn = {'request': self.context.get('request')}
         tasks_data = {
-            'id': [task.id for task in instance],
+            'tasks': [
+                TaskShowSerializer(task, context=cn).data for task in instance
+            ],
         }
         return tasks_data
 
