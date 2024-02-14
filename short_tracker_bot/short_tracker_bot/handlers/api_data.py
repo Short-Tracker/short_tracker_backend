@@ -11,7 +11,7 @@ from handlers.redis_data import get_data_from_redis, save_data_to_redis
 from handlers.requests import request_post, request_get
 
 
-async def get_token(state, chat_id, bot):
+async def get_token(state, chat_id, bot, new_state):
     data_fsm = await state.get_data()
     data = {
         'email': data_fsm['email'],
