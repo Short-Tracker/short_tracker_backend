@@ -34,6 +34,6 @@ async def main_func(message: types.Message, state: FSMContext, bot: Bot):
     data_fsm = await state.get_data()
     chat_id = data_fsm['chat_id']
     await state.update_data(password=message.text)
-    await get_token(state, chat_id, bot)
+    await get_token(state, chat_id, bot, Login.email)
     await message.delete()
     await get_data(state, bot)
