@@ -5,7 +5,6 @@ import aiohttp
 from aiogram import Bot
 from aiogram.fsm.context import FSMContext
 
-from .fsm import Login
 from config import HEADERS, URL
 from handlers.redis_data import get_data_from_redis, save_data_to_redis
 from handlers.requests import request_get, request_post
