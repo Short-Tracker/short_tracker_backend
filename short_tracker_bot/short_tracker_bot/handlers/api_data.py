@@ -5,13 +5,12 @@ import aiohttp
 from aiogram import Bot
 from aiogram.fsm.context import FSMContext
 
-from .fsm import Login
 from config import HEADERS, URL
 from handlers.redis_data import get_data_from_redis, save_data_to_redis
 from handlers.requests import request_get, request_post
 
 
-async def get_token(state, chat_id, bot):
+async def get_token(state, chat_id, bot, login):
     data_fsm = await state.get_data()
     data = {
         'email': data_fsm['email'],
@@ -37,7 +36,7 @@ async def get_token(state, chat_id, bot):
             await bot.send_message(
                 data_fsm['chat_id'],
                 'Неверный логин или пароль. Введите пароль еще раз:')
-            await state.set_state(Login.email)
+            await state.set_state(login.email)
     except aiohttp.ClientResponseError as e:
         logging.error(f'Ошибка при получении данных: {e}')
 

@@ -59,21 +59,24 @@ class TaskViewSet(viewsets.ModelViewSet):
         methods=('GET',),
         detail=False,
         permission_classes=(IsAuthenticated,),
+        url_path='get-sorted-tasks',
     )
     def get_sorted_tasks(self, _):
         queryset = self.get_queryset()
-        filter_queryset = {}
+        filter_queryset = {
+            Task.TaskStatus.TO_DO: [],
+            Task.TaskStatus.IN_PROGRESS: [],
+            Task.TaskStatus.DONE: [],
+            Task.TaskStatus.HOLD: [],
+        }
         for value in queryset:
             task = TaskShowSerializer(
                 value, context=self.get_serializer_context()
             ).data
             if value.hold:
-                filter_queryset['hold'] = filter_queryset.get(
-                    'hold', []) + [task]
+                filter_queryset.get(Task.TaskStatus.HOLD).append(task)
             elif value.status == Task.TaskStatus.ARCHIVED:
                 continue
             else:
-                filter_queryset[value.status] = filter_queryset.get(
-                    value.status, []) + [task]
-
+                filter_queryset.get(value.status).append(task)
         return Response(filter_queryset)
