@@ -1,9 +1,6 @@
 from django.conf import settings as django_settings
 from django.contrib.auth import get_user_model
 
-from django.http import JsonResponse
-# from django.shortcuts import render
-from django.core.files.storage import default_storage
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -11,7 +8,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from api.v1.users.forms import UploadFileForm
 from api.v1.schemas import (
     LOGIN_DONE_SCHEMA,
     LOGIN_SCHEMA,
@@ -21,6 +17,7 @@ from api.v1.schemas import (
 from api.v1.users.serializers import (
     AuthSignInSerializer,
     ShortUserSerializer,
+    PhotoUserSerializer,
 )
 
 User = get_user_model()
@@ -47,22 +44,27 @@ def login(request):
     serializer = AuthSignInSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = serializer.validated_data.get('user')
-    access_token = AccessToken.for_user(
-        serializer.validated_data.get('user')
-    )
+    access_token = AccessToken.for_user(serializer.validated_data.get('user'))
     refresh_token = RefreshToken.for_user(
         serializer.validated_data.get('user')
     )
-    response = Response(
-        ShortUserSerializer(user).data, status=status.HTTP_200_OK
+    response = Response(ShortUserSerializer(user).data,
+                        status=status.HTTP_200_OK)
+    response.set_cookie(
+        'jwt_access',
+        str(access_token),
+        expires=ACCESS_TOKEN_LIFETIME,
+        httponly=True,
+        samesite='None',
+        secure=True,
     )
     response.set_cookie(
-        'jwt_access', str(access_token), expires=ACCESS_TOKEN_LIFETIME,
-        httponly=True, samesite='None', secure=True,
-    )
-    response.set_cookie(
-        'jwt_refresh', str(refresh_token), expires=REFRESH_TOKEN_LIFETIME,
-        httponly=True, samesite='None', secure=True,
+        'jwt_refresh',
+        str(refresh_token),
+        expires=REFRESH_TOKEN_LIFETIME,
+        httponly=True,
+        samesite='None',
+        secure=True,
     )
     return response
 
@@ -85,33 +87,48 @@ def refresh_token(request):
         status=status.HTTP_200_OK
     )
     response.set_cookie(
-        'jwt_access', str(refresh.access_token),
+        'jwt_access',
+        str(refresh.access_token),
         expires=ACCESS_TOKEN_LIFETIME,
-        httponly=True, samesite='None', secure=True,
+        httponly=True,
+        samesite='None',
+        secure=True,
     )
 
     if django_settings.SIMPLE_JWT.get('ROTATE_REFRESH_TOKENS'):
         refresh.set_jti()
         refresh.set_exp()
         response.set_cookie(
-            'jwt_refresh', str(refresh),
+            'jwt_refresh',
+            str(refresh),
             expires=REFRESH_TOKEN_LIFETIME,
-            httponly=True, samesite='None', secure=True,
+            httponly=True,
+            samesite='None',
+            secure=True,
         )
 
     return response
 
 
-@swagger_auto_schema(method='post', responses={200: LOGOUT_SCHEMA},)
+@swagger_auto_schema(
+    method='post',
+    responses={200: LOGOUT_SCHEMA},
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout(request):
     response = Response(
         data={'signout': ('Вы успешно вышли из учетной записи!')},
-        status=status.HTTP_200_OK
+        status=status.HTTP_200_OK,
     )
-    response.delete_cookie('jwt_access', samesite='None',)
-    response.delete_cookie('jwt_refresh', samesite='None',)
+    response.delete_cookie(
+        'jwt_access',
+        samesite='None',
+    )
+    response.delete_cookie(
+        'jwt_refresh',
+        samesite='None',
+    )
 
     return response
 
@@ -119,21 +136,13 @@ def logout(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def photo(request):
-    # if request.method == 'POST':
-    form = UploadFileForm(request.POST, request.FILES)
-    if form.is_valid():
-        image_file = request.FILES['file']
-        file_name = default_storage.save(
-            'images/' + image_file.name, image_file
-        )
-        file_url = default_storage.url(file_name)
-        return JsonResponse(
-            {'message': 'Фотография успешно загружена', 'file_url': file_url}
+    user = request.user
+    serializer = PhotoUserSerializer(user, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {'message': 'Фотография успешно загружена',
+             'file_url': user.photo.url}
         )
     else:
-        return JsonResponse(
-            {'message': 'Неверный формат файла'}, status=400
-        )
-    # else:
-    #     form = UploadFileForm()
-    # return render(request, 'your_template.html', {'form': form})
+        return Response(serializer.errors, status=400)

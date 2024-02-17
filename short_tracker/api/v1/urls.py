@@ -16,7 +16,7 @@ from api.v1.users.views import (
 router_v1 = DefaultRouter()
 router_v1.register('tasks', TaskViewSet, basename='tasks')
 router_v1.register(
-   'task-analytics', TaskAnalyticsViewSet, basename='task-analytics'
+    'task-analytics', TaskAnalyticsViewSet, basename='task-analytics'
 )
 router_v1.register('messages', MessageViewSet, basename='messages')
 router_v1.register('replies', ReplyViewSet, basename='replies')
@@ -32,7 +32,7 @@ urlpatterns = [
     path('', include('djoser.urls')),
     path('', include(router_v1.urls)),
     path('auth/', include(auth_url)),
-    path('photo/', photo, name='photo'),
+    path('users/me/set-photo/', photo, name='photo'),
     path(
         'swagger<format>/',
         schema_view.without_ui(cache_timeout=0),
