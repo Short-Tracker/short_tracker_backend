@@ -13,6 +13,7 @@ from api.v1.users.views import (
     photo
 )
 
+
 router_v1 = DefaultRouter()
 router_v1.register('tasks', TaskViewSet, basename='tasks')
 router_v1.register(

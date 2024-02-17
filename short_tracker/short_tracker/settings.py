@@ -48,6 +48,7 @@ LOCAL_APPS = [
     'users.apps.UsersConfig',
     'tasks.apps.TasksConfig',
     'message.apps.MessageConfig',
+    'bot.apps.BotConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -102,7 +103,6 @@ else:
         }
     }
 
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -144,7 +144,8 @@ REST_FRAMEWORK = {
         'users.authentication.CookieJWTAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DATETIME_FORMAT': "%d.%m.%Y %H:%M",
 }
 
 SIMPLE_JWT = {
@@ -159,9 +160,24 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'HIDE_USERS': False,
+    'PERMISSIONS': {'user_create': ['api.v1.permissions.IsTeamLead']},
     'SERIALIZERS': {
         'user': 'api.v1.users.serializers.UserSerializer',
         'current_user': 'api.v1.users.serializers.UserSerializer',
         'user_create': 'api.v1.users.serializers.UserCreateSerializer',
     },
 }
+
+
+REDIS_HOST = "0.0.0.0"
+REDIS_PORT = "6379"
+
+CELERY_BROKER_URL = "redis://" + "127.0.0.1" + ":" + REDIS_PORT + "/0"
+CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
+CELERY_RESULT_BACKEND = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
+SOLVED_MESSAGE_DELETE = 72

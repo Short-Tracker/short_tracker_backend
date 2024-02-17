@@ -74,6 +74,7 @@ class TaskFilter(FilterSet):
             )
         return queryset
 
+
 class TaskAnalyticsFilter(django_filters.FilterSet):
     performer_id = filters.NumberFilter(
         field_name='performers', method='filter_by_performer')

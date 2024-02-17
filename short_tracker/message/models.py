@@ -28,7 +28,7 @@ class Message(models.Model):
     )
     message_date = models.DateTimeField(
         'Дата',
-        auto_now=True
+        auto_now_add=True
     )
     message_status = models.ForeignKey(
         'MessageStatus',
@@ -42,6 +42,7 @@ class Message(models.Model):
         return self.message_body
 
     class Meta:
+        ordering = ['-message_date']
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
         indexes = [

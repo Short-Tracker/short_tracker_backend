@@ -11,7 +11,7 @@ services:
   frontend:
     container_name: frontend
     image: zali1813/short_tracker_frontend:v1
-    restart: always
+    # restart: always
     volumes:
       - ../frontend/:/app/result_build/
     # depends_on:
@@ -40,18 +40,28 @@ services:
       - media_value:/var/html/media/
     # depends_on:
     #  - backend
-  
+  redis:
+    image: redis:alpine
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
   bot:
     container_name: bot
-    image: zali1813/short_tracker_bot:v1
+    #image: zali1813/short_tracker_bot:v1
+    build:
+      context: ../short_tracker_bot
+      dockerfile: Dockerfile
     restart: always
     env_file:
       - ./.env
-    # depends_on:
-    #  - backend
+    depends_on:
+      - redis
 
 volumes:
   static_value:
   media_value:
   postgres_data:
+  redis_data:
   

@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from message.models import Message
 from rest_framework import serializers
 
+from api.v1.message.serializers import MessageSerializer
 from api.v1.users.serializers import ShortUserSerializer
 from tasks.models import Task
 from users.models import ROLES
@@ -48,16 +50,17 @@ class TaskShowSerializer(TaskSerializer):
     """Serializer for show tasks."""
 
     creator = ShortUserSerializer(read_only=True)
-    performers = ShortUserSerializer(many=True)
+    performer = ShortUserSerializer()
     is_expired = serializers.SerializerMethodField()
     resolved_status = serializers.SerializerMethodField()
+    message = serializers.SerializerMethodField()
 
     class Meta(TaskSerializer.Meta):
         fields = TaskSerializer.Meta.fields + (
-            'creator', 'performers', 'is_expired', 'resolved_status',
+            'creator', 'performer', 'is_expired', 'resolved_status', 'message',
         )
         read_only_fields = TaskSerializer.Meta.read_only_fields + (
-            'is_expired', 'resolved_status',
+            'is_expired', 'resolved_status', 'message',
         )
 
     def get_is_expired(self, obj):
@@ -65,7 +68,7 @@ class TaskShowSerializer(TaskSerializer):
         Check if the task is expired or not.
         """
         return (
-            obj.deadline_date < timezone.now().date()
+            obj.deadline_date < timezone.now()
             and obj.status not in ('done', 'archived')
         )
 
@@ -78,12 +81,50 @@ class TaskShowSerializer(TaskSerializer):
         return RESOLVED_STATUS.get(
             role, ROLES.get('employee')).get(obj.status, ())
 
+    def get_message(self, obj):
+        """
+        Get the messages of the task.
+        """
+        messages = Message.objects.filter(task=obj)
+        return MessageSerializer(messages, many=True).data
+
 
 class TaskCreateSerializer(TaskSerializer):
     """Serializer for create tasks."""
+    performers = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=User.objects.all(), write_only=True
+    )
 
     class Meta(TaskSerializer.Meta):
-        fields = TaskSerializer.Meta.fields + ('performers',)
+        fields = TaskSerializer.Meta.fields + ('performer', 'performers',)
+        read_only_fields = TaskSerializer.Meta.read_only_fields + (
+            'performer',)
+
+    def create(self, validated_data):
+
+        performers = validated_data.pop('performers')
+        if len(performers) == 1:
+            validated_data['performer'] = performers[0]
+            return [Task.objects.create(**validated_data)]
+
+        tasks = []
+        for performer in performers:
+            tasks.append(Task(performer=performer, **validated_data))
+
+        Task.objects.bulk_create(tasks)
+        return tasks
+
+    def to_representation(self, instance):
+        """
+        Serialize objects.
+        """
+        cn = {'request': self.context.get('request')}
+        tasks_data = {
+            'tasks': [
+                TaskShowSerializer(task, context=cn).data for task in instance
+            ],
+        }
+        return tasks_data
 
 
 class TaskUpdateSerializer(TaskCreateSerializer):
@@ -93,10 +134,10 @@ class TaskUpdateSerializer(TaskCreateSerializer):
         if 'status' in validated_data:
             time = STATUS_TIME.get(validated_data.get('status'))
             if time:
-                validated_data[time] = timezone.now().date()
+                validated_data[time] = timezone.now()
             if (
                 validated_data.get('status') == task_status.DONE
-                and timezone.now().date() <= instance.deadline_date
+                and timezone.now() <= instance.deadline_date
             ):
                 validated_data['get_medals'] = True
         return super().update(instance, validated_data)
