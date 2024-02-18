@@ -140,4 +140,4 @@ class TaskUpdateSerializer(TaskCreateSerializer):
                 and timezone.now() <= instance.deadline_date
             ):
                 validated_data['get_medals'] = True
-        return super().update(instance, validated_data)
+        return [super().update(instance, validated_data)]
