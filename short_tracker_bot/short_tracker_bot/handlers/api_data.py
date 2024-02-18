@@ -119,16 +119,9 @@ async def get_deadline(task, chat_id, bot: Bot):
             f'{chat_id}_status_{task["id"]}',
             f'{task["deadline_date"]}_{chat_id}'
         )
-        logging.info('save deadline to redis')
-        logging.info(task)
-        performers = [
-            performer['first_name'] for performer in task['performers']
-        ]
-        logging.info('performers')
         await bot.send_message(
             chat_id=chat_id,
             text=f'Задача \"{task["description"]}\" сотрудника'
-                 f' {", ".join(performers)} просрочена'
         )
 
 
