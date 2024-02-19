@@ -120,7 +120,7 @@ class TaskCreateSerializer(TaskSerializer):
         """
         Serialize objects.
         """
-        cn = {'request': self.context.get('request')}
+        cn = self.context
         tasks_data = {
             'tasks': [
                 TaskShowSerializer(task, context=cn).data for task in instance
@@ -150,3 +150,6 @@ class TaskUpdateSerializer(TaskSerializer):
                 instance.deadline_date + timedelta(days=1)
             )
         return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        return TaskShowSerializer(instance, context=self.context).data
