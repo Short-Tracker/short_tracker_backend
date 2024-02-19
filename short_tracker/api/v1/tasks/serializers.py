@@ -127,8 +127,11 @@ class TaskCreateSerializer(TaskSerializer):
         return tasks_data
 
 
-class TaskUpdateSerializer(TaskCreateSerializer):
+class TaskUpdateSerializer(TaskSerializer):
     """Serializer for update tasks."""
+
+    class Meta(TaskSerializer.Meta):
+        fields = TaskSerializer.Meta.fields + ('performer',)
 
     def update(self, instance, validated_data):
         if 'status' in validated_data:
@@ -140,4 +143,4 @@ class TaskUpdateSerializer(TaskCreateSerializer):
                 and timezone.now() <= instance.deadline_date
             ):
                 validated_data['get_medals'] = True
-        return [super().update(instance, validated_data)]
+        return super().update(instance, validated_data)

@@ -145,7 +145,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
-    'DATETIME_FORMAT': "%d.%m.%Y %H:%M",
 }
 
 SIMPLE_JWT = {
