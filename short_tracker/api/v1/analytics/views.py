@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from django.db.models import Prefetch
+from django.db.models import F, Prefetch, Q 
 from django_filters.rest_framework import DjangoFilterBackend
+from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -21,32 +22,35 @@ class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_class = TaskAnalyticsFilter
 
     def get_queryset(self):
-        queryset = Task.objects.filter(
+        base_queryset = Task.objects.filter(
                  status=Task.TaskStatus.DONE
                  ).prefetch_related(
                       Prefetch(
-                           'performers',
+                           'performer',
                             queryset=CustomUser.objects.filter(
                                  is_team_lead=False
                             )
                       )
         )
+       # start_date = self.request.query_params.get('start_date')
+       # end_date = self.request.query_params.get('end_date')
         if self.request.query_params:
             filterset = TaskAnalyticsFilter(
                 self.request.query_params,
-                queryset=queryset, request=self.request)
+                queryset=base_queryset, request=self.request
+            )
             if filterset.is_valid():
-                    queryset = filterset.qs
+                queryset = filterset.qs
         else:
-            queryset = Task.objects.filter(
-                 done_date__gte=datetime.today() - timedelta(days=7))
+            return base_queryset.filter(
+                Q(done_date__gte=timezone.now() - timedelta(days=7)))
         return queryset
 
     def list(self, request, *args, **kwargs):
+        sort_by = request.query_params.get('sort_by')
         serializer = TaskAnalyticsSerializer(
             data=TasksAnalyticsFactory.calculate_analytics(
-                self.get_queryset()
-                )
-        )
+                self.get_queryset(), sort_by=sort_by
+        ))
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

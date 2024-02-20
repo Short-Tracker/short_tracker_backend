@@ -2,20 +2,21 @@ import datetime
 from datetime import timedelta
 
 from django.db.models import F
+from django.utils import timezone
 
 from users.models import CustomUser
 
 
 class TasksAnalyticsFactory:
     @staticmethod
-    def calculate_analytics(queryset):
+    def calculate_analytics(queryset, sort_by=None):
         analytics = {}
         analytics.update(
             TasksAnalyticsFactory.tasks_count(queryset)
         )
         analytics.update(
             TasksAnalyticsFactory.performers_analytics(
-                queryset)
+                queryset, sort_by)
         )
         return analytics
 
@@ -31,41 +32,70 @@ class TasksAnalyticsFactory:
         }
     
     @staticmethod
-    def performers_analytics(queryset):
+    def performers_analytics(queryset, sort_by=None):
         performers_analytics = {}
         performers_ids = queryset.values_list(
-            'performers', flat=True).distinct()
+            'performer_id', flat=True).distinct()
         for performer_id in performers_ids:
             performer = CustomUser.objects.get(id=performer_id)
-            filtered_queryset = queryset.filter(performers=performer)
+            filtered_queryset = queryset.filter(performer=performer)
             performer_name = f"{performer.first_name} {performer.last_name}"
             completed_on_time_count = filtered_queryset.filter(
                 done_date__lte=F('deadline_date'),
-                performers=performer).count()
+                performer=performer).count()
             completed_with_delay_count = filtered_queryset.filter(
                 done_date__gt=F('deadline_date'),
-                performers=performer).count()
+                performer=performer).count()
+            total_tasks = completed_on_time_count + completed_with_delay_count
             performers_analytics[performer_id] = {
                 'performer_name': performer_name,
+                'total_tasks': total_tasks,
                 'completed_on_time_count': completed_on_time_count,
-                'completed_with_delay_count': 
-                completed_with_delay_count,
+                'completed_with_delay_count': completed_with_delay_count,
                 'avg_time_create_date_to_inprogress_date': 
                 TasksAnalyticsFactory.avg_time(
                     filtered_queryset, 'create_date', 'inprogress_date'),
-                'avg_time_create_date_to_done_date': 
+                'avg_time_create_date_to_done_date':
                 TasksAnalyticsFactory.avg_time(
                     filtered_queryset, 'create_date', 'done_date'),
                 'avg_time_inprogress_date_to_done_date': 
                 TasksAnalyticsFactory.avg_time(
                     filtered_queryset, 'inprogress_date', 'done_date'),
             }
+        performers_analytics = TasksAnalyticsFactory.sort_by(
+                performers_analytics, sort_by
+            )
         return {'performers_analytics': performers_analytics}
+    
+    @staticmethod
+    def sort_by(performers_analytics, sort_by=None):
+        key_mapping = {
+        'total_tasks': 'total_tasks',
+        'completed_on_time_count': 'completed_on_time_count',
+        'completed_with_delay_count': 'completed_with_delay_count',
+        }
+
+        if sort_by:
+            key = key_mapping.get(sort_by, 'completed_on_time_count')
+            performers_analytics = dict(
+                sorted(
+                    performers_analytics.items(), 
+                    key=lambda x: x[1][key], reverse=True
+                )
+            )
+            return performers_analytics
+        else:
+            performers_analytics = dict(
+                sorted(
+                    performers_analytics.items(), 
+                    key=lambda x: x[1]['completed_on_time_count'],
+                    reverse=True))
+            return performers_analytics
 
     @staticmethod
     def avg_time(queryset, field1, field2):
         datetime_list = [
-            getattr(task, field2) - getattr(task, field1)
+            timezone.localtime(getattr(task, field2)) - timezone.localtime(getattr(task, field1))
             for task in queryset
             if getattr(task, field1) and getattr(task, field2)
         ]
