@@ -75,25 +75,16 @@ class TaskFilter(FilterSet):
             )
         return queryset
 
-
 class TaskAnalyticsFilter(django_filters.FilterSet):
-    performer_id = filters.NumberFilter(
-        field_name='performer_id', method='filter_by_performer')
     start_date = django_filters.DateFilter(
         field_name='done_date',lookup_expr=('gt'))
     end_date = django_filters.DateFilter(
         field_name='done_date',lookup_expr=('lt'))
-    date_range = filters.DateRangeFilter(field_name='done_date')
     sort_by = filters.CharFilter(method='filter_sort_by')
 
     class Meta:
         model = Task
         fields=[]
-    
-    def filter_by_performer(self, queryset, name, value):
-       if value:
-            return queryset.filter(performer_id=value)
-       return queryset
-    
+
     def filter_sort_by(self, queryset, name, value):
         return queryset

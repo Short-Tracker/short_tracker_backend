@@ -40,18 +40,18 @@ class TasksAnalyticsFactory:
             performer = CustomUser.objects.get(id=performer_id)
             filtered_queryset = queryset.filter(performer=performer)
             performer_name = f"{performer.first_name} {performer.last_name}"
-            completed_on_time_count = filtered_queryset.filter(
+            on_time_count = filtered_queryset.filter(
                 done_date__lte=F('deadline_date'),
                 performer=performer).count()
-            completed_with_delay_count = filtered_queryset.filter(
+            with_delay_count = filtered_queryset.filter(
                 done_date__gt=F('deadline_date'),
                 performer=performer).count()
-            total_tasks = completed_on_time_count + completed_with_delay_count
+            total_tasks = on_time_count + with_delay_count
             performers_analytics[performer_id] = {
-                'performer_name': performer_name,
+               'performer_name': performer_name,
                 'total_tasks': total_tasks,
-                'completed_on_time_count': completed_on_time_count,
-                'completed_with_delay_count': completed_with_delay_count,
+                'on_time_count': on_time_count,
+                'with_delay_count': with_delay_count,
                 'avg_time_create_date_to_inprogress_date': 
                 TasksAnalyticsFactory.avg_time(
                     filtered_queryset, 'create_date', 'inprogress_date'),
@@ -71,26 +71,17 @@ class TasksAnalyticsFactory:
     def sort_by(performers_analytics, sort_by=None):
         key_mapping = {
         'total_tasks': 'total_tasks',
-        'completed_on_time_count': 'completed_on_time_count',
-        'completed_with_delay_count': 'completed_with_delay_count',
+        'on_time_count': 'on_time_count',
+        'with_delay_count': 'with_delay_count',
         }
-
-        if sort_by:
-            key = key_mapping.get(sort_by, 'completed_on_time_count')
-            performers_analytics = dict(
-                sorted(
-                    performers_analytics.items(), 
-                    key=lambda x: x[1][key], reverse=True
+        key = key_mapping.get(sort_by, 'on_time_count')
+        performers_analytics = dict(
+            sorted(
+                performers_analytics.items(),
+                key=lambda x: x[1][key], reverse=True
                 )
             )
-            return performers_analytics
-        else:
-            performers_analytics = dict(
-                sorted(
-                    performers_analytics.items(), 
-                    key=lambda x: x[1]['completed_on_time_count'],
-                    reverse=True))
-            return performers_analytics
+        return performers_analytics
 
     @staticmethod
     def avg_time(queryset, field1, field2):

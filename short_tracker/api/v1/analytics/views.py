@@ -22,7 +22,7 @@ class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_class = TaskAnalyticsFilter
 
     def get_queryset(self):
-        base_queryset = Task.objects.filter(
+        queryset = Task.objects.filter(
                  status=Task.TaskStatus.DONE
                  ).prefetch_related(
                       Prefetch(
@@ -32,18 +32,18 @@ class TaskAnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
                             )
                       )
         )
-       # start_date = self.request.query_params.get('start_date')
-       # end_date = self.request.query_params.get('end_date')
-        if self.request.query_params:
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+        if start_date or end_date:
             filterset = TaskAnalyticsFilter(
                 self.request.query_params,
-                queryset=base_queryset, request=self.request
+                queryset=queryset, request=self.request
             )
             if filterset.is_valid():
                 queryset = filterset.qs
         else:
-            return base_queryset.filter(
-                Q(done_date__gte=timezone.now() - timedelta(days=7)))
+                return queryset.filter(
+                     Q(done_date__gte=timezone.now() - timedelta(days=7)))
         return queryset
 
     def list(self, request, *args, **kwargs):
