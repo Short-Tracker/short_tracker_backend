@@ -12,9 +12,13 @@ class UserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = User
         fields = (
-            'email', 'username', 'telegram_nickname',
-            'password', 'first_name', 'last_name',
-            'is_team_lead'
+            'email',
+            'username',
+            'telegram_nickname',
+            'password',
+            'first_name',
+            'last_name',
+            'is_team_lead',
         )
 
 
@@ -24,8 +28,14 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'id', 'username', 'telegram_nickname', 'email',
-            'first_name', 'last_name', 'is_team_lead'
+            'id',
+            'username',
+            'telegram_nickname',
+            'email',
+            'first_name',
+            'last_name',
+            'is_team_lead',
+            'photo',
         )
 
 
@@ -35,8 +45,24 @@ class ShortUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'id', 'telegram_nickname', 'email',
-            'first_name', 'last_name', 'is_team_lead'
+            'id',
+            'telegram_nickname',
+            'email',
+            'first_name',
+            'last_name',
+            'is_team_lead',
+            'photo',
+        )
+
+
+class PhotoUserSerializer(serializers.ModelSerializer):
+    """Sterilizer for user's photo."""
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'photo',
         )
 
 
@@ -58,7 +84,7 @@ class AuthSignInSerializer(serializers.Serializer):
                 detail={'email': ('Пользователь с таким email не существует')},
             )
         else:
-            if user.check_password(data.get("password")):
+            if user.check_password(data.get('password')):
                 data['user'] = user
                 return data
             raise ValidationError(

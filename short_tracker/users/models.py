@@ -58,7 +58,8 @@ class CustomUser(AbstractUser):
             RegexValidator(
                 regex=r'^[а-яА-Я\-]{2,30}\Z',
                 message='Только кирилица и дефис'
-            )],
+            )
+        ],
     )
     last_name = models.CharField(
         max_length=30,
@@ -67,7 +68,8 @@ class CustomUser(AbstractUser):
             RegexValidator(
                 regex=r'^[а-яА-Я\-]{2,30}\Z',
                 message='Только кирилица и дефис'
-            )],
+            )
+        ],
     )
     telegram_nickname = models.CharField(
         max_length=33,
@@ -77,7 +79,8 @@ class CustomUser(AbstractUser):
             RegexValidator(
                 regex=r'^@[a-zA-Z0-9_]{5,33}\Z',
                 message='nickname содержит недопустимый символ'
-            )],
+            )
+        ],
     )
     email = models.EmailField(
         max_length=254,
@@ -87,11 +90,18 @@ class CustomUser(AbstractUser):
             RegexValidator(
                 regex=r'^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$',
                 message='email содержит недопустимый символ'
-            )],
+            )
+        ],
     )
     is_team_lead = models.BooleanField(
         default=False,
         verbose_name='Роль',
+    )
+    photo = models.ImageField(
+        upload_to='profile_photo/',
+        null=True,
+        blank=True,
+        default=None
     )
 
     class Meta:
