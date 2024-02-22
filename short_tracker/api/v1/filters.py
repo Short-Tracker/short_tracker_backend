@@ -76,9 +76,9 @@ class TaskFilter(FilterSet):
         return queryset
 
 class TaskAnalyticsFilter(django_filters.FilterSet):
-    start_date = django_filters.DateFilter(
+    start_date = django_filters.IsoDateTimeFilter(
         field_name='done_date',lookup_expr=('gt'))
-    end_date = django_filters.DateFilter(
+    end_date = django_filters.IsoDateTimeFilter(
         field_name='done_date',lookup_expr=('lt'))
     sort_by = filters.CharFilter(method='filter_sort_by')
 
