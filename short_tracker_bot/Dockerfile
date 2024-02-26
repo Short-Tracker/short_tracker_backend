@@ -2,8 +2,8 @@ FROM python:3.9
 
 WORKDIR /app
 
-#COPY short_tracker_bot/requirements.txt .
-COPY requirements.txt .
+COPY short_tracker_bot/requirements.txt .
+#COPY requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache-dir
 
