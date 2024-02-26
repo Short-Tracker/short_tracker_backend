@@ -120,6 +120,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru-ru'
 
+TIME_ZONE = 'Europe/Moscow'
+
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
@@ -145,7 +147,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
-    'DATETIME_FORMAT': "%d.%m.%Y %H:%M",
 }
 
 SIMPLE_JWT = {

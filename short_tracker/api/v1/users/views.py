@@ -13,7 +13,11 @@ from api.v1.schemas import (
     LOGOUT_SCHEMA,
     REFRESH_DONE_SCHEMA,
 )
-from api.v1.users.serializers import AuthSignInSerializer, ShortUserSerializer
+from api.v1.users.serializers import (
+    AuthSignInSerializer,
+    ShortUserSerializer,
+    PhotoUserSerializer,
+)
 
 User = get_user_model()
 
@@ -39,22 +43,27 @@ def login(request):
     serializer = AuthSignInSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = serializer.validated_data.get('user')
-    access_token = AccessToken.for_user(
-        serializer.validated_data.get('user')
-    )
+    access_token = AccessToken.for_user(serializer.validated_data.get('user'))
     refresh_token = RefreshToken.for_user(
         serializer.validated_data.get('user')
     )
-    response = Response(
-        ShortUserSerializer(user).data, status=status.HTTP_200_OK
+    response = Response(ShortUserSerializer(user).data,
+                        status=status.HTTP_200_OK)
+    response.set_cookie(
+        'jwt_access',
+        str(access_token),
+        expires=ACCESS_TOKEN_LIFETIME,
+        httponly=True,
+        samesite='None',
+        secure=True,
     )
     response.set_cookie(
-        'jwt_access', str(access_token), expires=ACCESS_TOKEN_LIFETIME,
-        httponly=True, samesite='None', secure=True,
-    )
-    response.set_cookie(
-        'jwt_refresh', str(refresh_token), expires=REFRESH_TOKEN_LIFETIME,
-        httponly=True, samesite='None', secure=True,
+        'jwt_refresh',
+        str(refresh_token),
+        expires=REFRESH_TOKEN_LIFETIME,
+        httponly=True,
+        samesite='None',
+        secure=True,
     )
     return response
 
@@ -77,32 +86,62 @@ def refresh_token(request):
         status=status.HTTP_200_OK
     )
     response.set_cookie(
-        'jwt_access', str(refresh.access_token),
+        'jwt_access',
+        str(refresh.access_token),
         expires=ACCESS_TOKEN_LIFETIME,
-        httponly=True, samesite='None', secure=True,
+        httponly=True,
+        samesite='None',
+        secure=True,
     )
 
     if django_settings.SIMPLE_JWT.get('ROTATE_REFRESH_TOKENS'):
         refresh.set_jti()
         refresh.set_exp()
         response.set_cookie(
-            'jwt_refresh', str(refresh),
+            'jwt_refresh',
+            str(refresh),
             expires=REFRESH_TOKEN_LIFETIME,
-            httponly=True, samesite='None', secure=True,
+            httponly=True,
+            samesite='None',
+            secure=True,
         )
 
     return response
 
 
-@swagger_auto_schema(method='post', responses={200: LOGOUT_SCHEMA},)
+@swagger_auto_schema(
+    method='post',
+    responses={200: LOGOUT_SCHEMA},
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout(request):
     response = Response(
         data={'signout': ('Вы успешно вышли из учетной записи!')},
-        status=status.HTTP_200_OK
+        status=status.HTTP_200_OK,
     )
-    response.delete_cookie('jwt_access', samesite='None',)
-    response.delete_cookie('jwt_refresh', samesite='None',)
+    response.delete_cookie(
+        'jwt_access',
+        samesite='None',
+    )
+    response.delete_cookie(
+        'jwt_refresh',
+        samesite='None',
+    )
 
     return response
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def photo(request):
+    user = request.user
+    serializer = PhotoUserSerializer(user, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {'message': 'Фотография успешно загружена',
+             'file_url': user.photo.url}
+        )
+    else:
+        return Response(serializer.errors, status=400)

@@ -1,8 +1,9 @@
 import django_filters
-from django.db.models import Case, Q, Value, When
+from django.db.models import Case, F,Q, Value, When
 from django.utils import timezone
 from django_filters.rest_framework import FilterSet, filters
 
+from api.v1.analytics.analytics import TasksAnalyticsFactory
 from tasks.models import Task
 
 
@@ -74,21 +75,16 @@ class TaskFilter(FilterSet):
             )
         return queryset
 
-
 class TaskAnalyticsFilter(django_filters.FilterSet):
-    performer_id = filters.NumberFilter(
-        field_name='performers', method='filter_by_performer')
-    start_date = django_filters.DateFilter(
+    start_date = django_filters.IsoDateTimeFilter(
         field_name='done_date',lookup_expr=('gt'))
-    end_date = django_filters.DateFilter(
+    end_date = django_filters.IsoDateTimeFilter(
         field_name='done_date',lookup_expr=('lt'))
-    date_range = filters.DateRangeFilter(field_name='done_date')
+    sort_by = filters.CharFilter(method='filter_sort_by')
 
     class Meta:
         model = Task
         fields=[]
-    
-    def filter_by_performer(self, queryset, name, value):
-       if value:
-            return queryset.filter(performers__in=[value])
-       return queryset
+
+    def filter_sort_by(self, queryset, name, value):
+        return queryset

@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from message.models import Message
@@ -39,7 +41,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = (
             'id', 'description', 'status', 'create_date', 'inprogress_date',
-            'done_date', 'deadline_date', 'archive_date', 'link'
+            'done_date', 'deadline_date', 'archive_date', 'link', 'hold'
         )
         read_only_fields = (
             'id', 'archive_date', 'inprogress_date', 'done_date', 'is_expired'
@@ -118,7 +120,7 @@ class TaskCreateSerializer(TaskSerializer):
         """
         Serialize objects.
         """
-        cn = {'request': self.context.get('request')}
+        cn = self.context
         tasks_data = {
             'tasks': [
                 TaskShowSerializer(task, context=cn).data for task in instance
@@ -127,8 +129,11 @@ class TaskCreateSerializer(TaskSerializer):
         return tasks_data
 
 
-class TaskUpdateSerializer(TaskCreateSerializer):
+class TaskUpdateSerializer(TaskSerializer):
     """Serializer for update tasks."""
+
+    class Meta(TaskSerializer.Meta):
+        fields = TaskSerializer.Meta.fields + ('performer',)
 
     def update(self, instance, validated_data):
         if 'status' in validated_data:
@@ -140,4 +145,11 @@ class TaskUpdateSerializer(TaskCreateSerializer):
                 and timezone.now() <= instance.deadline_date
             ):
                 validated_data['get_medals'] = True
+        if not validated_data.get('hold', True):
+            validated_data['deadline_date'] = (
+                instance.deadline_date + timedelta(days=1)
+            )
         return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        return TaskShowSerializer(instance, context=self.context).data

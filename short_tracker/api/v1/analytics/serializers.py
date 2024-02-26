@@ -3,12 +3,12 @@ from rest_framework import serializers
 
 class PerformerAnalyticsSerializer(serializers.Serializer):
     performer_name = serializers.CharField()
-    completed_on_time_count = serializers.IntegerField()
-    completed_with_delay_count = serializers.IntegerField()
+    total_tasks = serializers.IntegerField()
+    on_time_count = serializers.IntegerField()
+    with_delay_count = serializers.IntegerField()
     avg_time_create_date_to_inprogress_date = serializers.CharField()
     avg_time_create_date_to_done_date = serializers.CharField()
     avg_time_inprogress_date_to_done_date = serializers.CharField()
-
 
 class TaskAnalyticsSerializer(serializers.Serializer):
     total_tasks_on_time = serializers.IntegerField()

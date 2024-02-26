@@ -25,8 +25,9 @@ class IsCreatorAndLidOrPerformerOnly(permissions.BasePermission):
 
         is_lead = request.user.is_team_lead
         perf = []
-        for performer in obj.performers.values():
-            perf.append(performer.get('id'))
+        if request.data.get('performers'):
+            for performer in obj.get.performers.values():
+                perf.append(performer.get('id'))
         a = (request.user.id in perf and len(request.data) == 1
              and 'status' in request.data)
         b = request.user.id == obj.creator.id
