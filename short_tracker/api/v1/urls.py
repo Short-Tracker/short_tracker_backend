@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .bot.views import BotAPIView
+from .bot.views import BotAPIView, AllowAPIView
 from .message.views import MessageViewSet, ReplyViewSet
 from api.v1.analytics.views import TaskAnalyticsViewSet
 from api.v1.schemas import schema_view
@@ -26,6 +26,7 @@ auth_url = [
 urlpatterns = [
     path('', include('djoser.urls')),
     path('', include(router_v1.urls)),
+    path('notifications/', AllowAPIView.as_view()),
     path('auth/', include(auth_url)),
     path('users/me/set-photo/', photo, name='photo'),
     path(
