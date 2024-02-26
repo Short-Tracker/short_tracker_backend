@@ -121,7 +121,7 @@ async def get_deadline(task, chat_id, bot: Bot):
         )
         await bot.send_message(
             chat_id=chat_id,
-            text=f'Задача \"{task["description"]}\" сотрудника'
+            text=f'Задача \"{task["description"]}\" просрочена'
         )
 
 
