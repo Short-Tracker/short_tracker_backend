@@ -1,8 +1,5 @@
-import datetime
-from datetime import timedelta
 
 from django.db.models import F
-from django.utils import timezone
 
 from users.models import CustomUser
 
@@ -33,7 +30,7 @@ class TasksAnalyticsFactory:
     
     @staticmethod
     def performers_analytics(queryset, sort_by=None):
-        performers_analytics = {}
+        performers_analytics = []
         performers_ids = queryset.values_list(
             'performer_id', flat=True).distinct()
         for performer_id in performers_ids:
@@ -47,8 +44,9 @@ class TasksAnalyticsFactory:
                 done_date__gt=F('deadline_date'),
                 performer=performer).count()
             total_tasks = on_time_count + with_delay_count
-            performers_analytics[performer_id] = {
-               'performer_name': performer_name,
+            performer_data = {
+                'performer_id': performer_id,
+                'performer_name': performer_name,
                 'total_tasks': total_tasks,
                 'on_time_count': on_time_count,
                 'with_delay_count': with_delay_count,
@@ -59,12 +57,12 @@ class TasksAnalyticsFactory:
                 TasksAnalyticsFactory.avg_time(
                     filtered_queryset, 'create_date', 'done_date'),
                 'avg_time_inprogress_date_to_done_date': 
-                TasksAnalyticsFactory.avg_time(
+                    TasksAnalyticsFactory.avg_time(
                     filtered_queryset, 'inprogress_date', 'done_date'),
             }
+            performers_analytics.append(performer_data)
         performers_analytics = TasksAnalyticsFactory.sort_by(
-                performers_analytics, sort_by
-            )
+            performers_analytics, sort_by)
         return {'performers_analytics': performers_analytics}
     
     @staticmethod
@@ -75,22 +73,22 @@ class TasksAnalyticsFactory:
         'with_delay_count': 'with_delay_count',
         }
         key = key_mapping.get(sort_by, 'on_time_count')
-        performers_analytics = dict(
-            sorted(
-                performers_analytics.items(),
-                key=lambda x: x[1][key], reverse=True
+        performers_analytics = sorted(
+                performers_analytics,
+                key=lambda x: x[key], reverse=True
                 )
-            )
         return performers_analytics
 
     @staticmethod
     def avg_time(queryset, field1, field2):
-        datetime_list = [
-            timezone.localtime(getattr(task, field2)) - timezone.localtime(getattr(task, field1))
+        time_list_minutes  = [
+            (getattr(task, field2) - getattr(task, field1)).total_seconds() / 60
             for task in queryset
             if getattr(task, field1) and getattr(task, field2)
         ]
-        sum_of_time = sum(datetime_list, datetime.timedelta())
-        length = len(datetime_list)
-        avg_time = sum_of_time // length if length > 0 else timedelta()
-        return str(avg_time).rsplit(':', 1)[0]
+        avg_time = (
+            sum(time_list_minutes ) / len(time_list_minutes )
+            if len(time_list_minutes ) > 0
+            else 0
+        )
+        return int(avg_time)
