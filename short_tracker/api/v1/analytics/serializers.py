@@ -13,14 +13,14 @@ class PerformerAnalyticsSerializer(serializers.Serializer):
 class TaskAnalyticsSerializer(serializers.Serializer):
     total_tasks_on_time = serializers.IntegerField()
     total_tasks_with_delay = serializers.IntegerField()
-    performers_analytics = serializers.DictField(
-        child=PerformerAnalyticsSerializer(), allow_empty=True, default={})
+    performers_analytics = serializers.ListField(
+        child=PerformerAnalyticsSerializer(), allow_empty=True, default=[])
 
     def create(self, validated_data):
         total_tasks_on_time = validated_data.get('total_tasks_on_time', 0)
         total_tasks_with_delay = validated_data.get('total_tasks_with_delay', 0)
         performers_analytics_data = validated_data.get(
-            'performers_analytics', {}
+            'performers_analytics', []
         )
 
         task_analytics_instance = {

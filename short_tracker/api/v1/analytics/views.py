@@ -1,8 +1,8 @@
 from datetime import timedelta
 
-from django.db.models import F, Prefetch, Q 
-from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Prefetch, Q
 from django.utils import timezone
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
